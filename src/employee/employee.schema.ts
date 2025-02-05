@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { Contract } from 'src/contract/contract.schema';
 import { Department } from 'src/department/department.schema';
+import { Document } from 'src/document/document.schema';
 
 export enum Position {
   INTERN = 'INTERN',

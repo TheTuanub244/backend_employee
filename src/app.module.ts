@@ -9,9 +9,21 @@ import { DocumentModule } from './document/document.module';
 import { AttendanceRecordModule } from './attendance_record/attendance_record.module';
 import { OvertimeRecordModule } from './overtime_record/overtime_record.module';
 import { LeaveRequestModule } from './leave_request/leave_request.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 @Module({
-  imports: [EmployeeModule, DepartmentModule, ContractModule, DocumentModule, AttendanceRecordModule, OvertimeRecordModule, LeaveRequestModule],
+  imports: [
+    EmployeeModule,
+    DepartmentModule,
+    ContractModule,
+    DocumentModule,
+    AttendanceRecordModule,
+    OvertimeRecordModule,
+    LeaveRequestModule,
+    MongooseModule.forRoot(process.env.DB_URI),
+  ],
   controllers: [AppController, EmployeeController],
   providers: [AppService],
 })
