@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { Employee } from 'src/employee/employee.schema';
 
-@Schema()
+@Schema({ timestamps: true })
 export class Department {
   @Prop({ required: true })
   name: string;

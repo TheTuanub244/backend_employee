@@ -22,7 +22,7 @@ export enum DocumentType {
   TAX_DOCUMENT = 'TAX_DOCUMENT',
   OTHER = 'OTHER',
 }
-@Schema()
+@Schema({ timestamps: true })
 export class Document {
   @Prop({ required: true, type: mongoose.Schema.ObjectId, ref: 'Employee' })
   employeeId: Employee;

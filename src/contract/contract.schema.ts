@@ -17,7 +17,7 @@ export enum ContractStatus {
   TERMINATED = 'TERMINATED',
   PENDING = 'PENDING',
 }
-@Schema()
+@Schema({ timestamps: true })
 export class Contract {
   @Prop({ required: true, type: mongoose.Schema.ObjectId, ref: 'Employee' })
   employeeId: Employee;

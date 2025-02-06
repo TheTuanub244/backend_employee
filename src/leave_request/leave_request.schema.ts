@@ -12,9 +12,14 @@ export enum Status {
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
 }
-@Schema()
+@Schema({ timestamps: true })
 export class LeaveRequest {
-  @Prop({ required: true, type: mongoose.Schema.ObjectId, ref: 'Employee' })
+  @Prop({
+    required: true,
+    type: mongoose.Schema.ObjectId,
+    ref: 'Employee',
+    index: true,
+  })
   employeeId: Employee;
   @Prop({ required: true, enum: LeaveType, default: LeaveType.ANNUAL_LEAVE })
   leaveType: LeaveType;
@@ -26,8 +31,10 @@ export class LeaveRequest {
   totalDays: number;
   @Prop({ required: false })
   reason: string;
-  @Prop({ required: true, enum: Status, default: Status.PENDING })
+  @Prop({ required: true, enum: Status, default: Status.PENDING, index: true })
   status: Status;
 }
 
 export const LeaveRequestSchema = SchemaFactory.createForClass(LeaveRequest);
+
+LeaveRequestSchema.index({ reason: 'text' });

@@ -13,5 +13,6 @@ import { Employee, EmployeeSchema } from './employee.schema';
       },
     ]),
   ],
+  exports: [EmployeeService],
 })
 export class EmployeeModule {}

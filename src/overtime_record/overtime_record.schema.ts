@@ -6,11 +6,18 @@ export enum Status {
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
 }
-@Schema()
+@Schema({ timestamps: true })
 export class OvertimeRecord {
-  @Prop({ required: true, type: mongoose.Schema.ObjectId, ref: 'Employee' })
+  @Prop({
+    required: true,
+    type: mongoose.Schema.ObjectId,
+    ref: 'Employee',
+    index: true,
+  })
   employeeId: Employee;
-  @Prop({ required: true, type: Date })
+  @Prop({ required: true, type: Date, index: true })
+  date: Date;
+  @Prop({ required: true, type: Date, index: true })
   startTime: Date;
   @Prop({ required: true, type: Date })
   endTime: Date;
@@ -18,7 +25,9 @@ export class OvertimeRecord {
   totalHours: number;
   @Prop({ required: false })
   reason: string;
-  @Prop({ required: true, enum: Status, default: Status.PENDING })
+  @Prop({ required: true, default: 1.5 })
+  rate: number; // Hệ số làm thêm giờ
+  @Prop({ required: true, enum: Status, default: Status.PENDING, index: true })
   status: Status;
 }
 export const OverTimeRecordSchema =

@@ -10,6 +10,11 @@ import { AttendanceRecordModule } from './attendance_record/attendance_record.mo
 import { OvertimeRecordModule } from './overtime_record/overtime_record.module';
 import { LeaveRequestModule } from './leave_request/leave_request.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { SalaryRecordModule } from './salary_record/salary_record.module';
+import { TaxRecordModule } from './tax_record/tax_record.module';
+import { DeductionModule } from './deduction/deduction.module';
+import { BonusModule } from './bonus/bonus.module';
+import { AllowanceModule } from './allowance/allowance.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -23,6 +28,11 @@ dotenv.config();
     OvertimeRecordModule,
     LeaveRequestModule,
     MongooseModule.forRoot(process.env.DB_URI),
+    SalaryRecordModule,
+    AllowanceModule,
+    BonusModule,
+    DeductionModule,
+    TaxRecordModule,
   ],
   controllers: [AppController, EmployeeController],
   providers: [AppService],
