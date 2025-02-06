@@ -28,10 +28,11 @@ export class SalaryRecordService {
     const employee =
       await this.employeeService.getEmployeeById(employeeObjectId);
     const baseSalary = employee.baseSalary;
-    const workHours = await this.attendanceRecordService.getTotalWorkHours(
-      employeeObjectId,
-      month,
-    );
+    const workHours =
+      await this.attendanceRecordService.getTotalWorkHoursByEmployee(
+        employeeObjectId,
+        month,
+      );
     const overtimePay = await this.overtimeRecordService.calculateOvertimePay(
       employeeObjectId,
       month,

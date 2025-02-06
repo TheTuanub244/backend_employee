@@ -4,7 +4,7 @@ import { Employee } from './employee.schema';
 import { Model, Types } from 'mongoose';
 import { ContractService } from 'src/contract/contract.service';
 import { DepartmentService } from 'src/department/department.service';
-
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class EmployeeService {
   constructor(
@@ -25,9 +25,14 @@ export class EmployeeService {
     return employee.insurance;
   }
   async createEmployeeByAdmin(employeeDto: any) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(employeeDto.password, salt)
     const newEmployee = new this.employeeSchema({
       fullName: employeeDto.fullName,
       dob: employeeDto.dob,
+      userName: employeeDto.userName,
+      password: hashedPassword,
+      role: employeeDto.role,
       department: employeeDto.department,
       position: employeeDto.position,
       baseSalary: employeeDto.baseSalary,
@@ -38,10 +43,15 @@ export class EmployeeService {
     return await newEmployee.save();
   }
   async addNewEmployee(employeeInfo: any) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(employeeInfo.password, salt);
     const newEmployee = new this.employeeSchema({
       fullName: employeeInfo.fullName,
       dob: employeeInfo.dob,
       department: employeeInfo.department,
+      userName: employeeInfo.userName,
+      password: hashedPassword,
+      role: employeeInfo.role,
       position: employeeInfo.position,
       baseSalary: employeeInfo.baseSalary,
       bankAccount: employeeInfo.bankAccount,

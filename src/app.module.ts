@@ -15,6 +15,7 @@ import { TaxRecordModule } from './tax_record/tax_record.module';
 import { DeductionModule } from './deduction/deduction.module';
 import { BonusModule } from './bonus/bonus.module';
 import { AllowanceModule } from './allowance/allowance.module';
+import { AuthModule } from './auth/auth.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -33,6 +34,7 @@ dotenv.config();
     BonusModule,
     DeductionModule,
     TaxRecordModule,
+    AuthModule,
   ],
   controllers: [AppController, EmployeeController],
   providers: [AppService],

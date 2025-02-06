@@ -8,6 +8,7 @@ import { ContractService } from 'src/contract/contract.service';
 import { DepartmentService } from 'src/department/department.service';
 import { Department, DepartmentSchema } from 'src/department/department.schema';
 import { DepartmentModule } from 'src/department/department.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   providers: [EmployeeService, ContractService, DepartmentService],
@@ -26,6 +27,11 @@ import { DepartmentModule } from 'src/department/department.module';
         schema: DepartmentSchema,
       },
     ]),
+    JwtModule.register({
+      secret: 'yourSecretKey',
+
+      signOptions: { expiresIn: '60m' },
+    }),
     ContractModule,
     DepartmentModule,
   ],

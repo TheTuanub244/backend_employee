@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post, Query } from '@nestjs/common';
 import { AttendanceRecordService } from './attendance_record.service';
 import { Types } from 'mongoose';
 
@@ -7,17 +7,24 @@ export class AttendanceRecordController {
   constructor(
     private readonly attendanceRecordService: AttendanceRecordService,
   ) {}
-  @Post('/getTotalWorkHours/:id')
-  async getTotalWorkHours(@Param('id') id: string, @Body() data: any) {
-    return this.attendanceRecordService.getTotalWorkHours(
+  @Post('/getTotalWorkHoursByEmployee/:id')
+  async getTotalWorkHoursByEmployee(
+    @Param('id') id: string,
+    @Query() month: string,
+  ) {
+    return this.attendanceRecordService.getTotalWorkHoursByEmployee(
       new Types.ObjectId(id),
-      data.month,
+      month,
     );
   }
-  @Post('createAttendanceRecord')
-  async createAttendanceRecord(@Body() data: any) {
-    return this.attendanceRecordService.createAttendanceRecord(
+  @Post('createAttendanceRecordByAdmin')
+  async createAttendanceRecordByAdmin(@Body() data: any) {
+    return this.attendanceRecordService.createAttendanceRecordByAdmin(
       data.attendanceRecordDto,
     );
+  }
+  @Post('/getTotalWorkHoursByMonth/:id')
+  async getTotalWorkHoursByMonth(@Query() month: string) {
+    return this.attendanceRecordService.getTotalWorkHoursByMonth(month);
   }
 }

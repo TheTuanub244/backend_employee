@@ -21,7 +21,7 @@ export class AttendanceRecordService {
 
     return parseFloat(totalHours.toFixed(2));
   }
-  async createAttendanceRecord(attendanceRecordDto: any) {
+  async createAttendanceRecordByAdmin(attendanceRecordDto: any) {
     const workHours = this.calculateTotalHours(
       attendanceRecordDto.checkIn,
       attendanceRecordDto.checkOut,
@@ -41,7 +41,7 @@ export class AttendanceRecordService {
     });
     return await newAttendanceRecord.save();
   }
-  async getTotalWorkHours(
+  async getTotalWorkHoursByEmployee(
     employeeId: Types.ObjectId,
     month: string,
   ): Promise<number> {
@@ -54,5 +54,41 @@ export class AttendanceRecordService {
     });
 
     return records.reduce((total, record) => total + record.workHours, 0);
+  }
+  async getTotalWorkHoursByMonth(month: string) {
+    const startDate = new Date(`${month}-01`);
+    const endDate = new Date(
+      new Date(startDate).setMonth(startDate.getMonth() + 1),
+    );
+
+    return await this.attendanceRecordSchema.aggregate([
+      {
+        $match: {
+          checkIn: { $gte: startDate, $lt: endDate },
+        },
+      },
+      {
+        $group: {
+          _id: '$employeeId',
+          totalWorkHours: { $sum: '$workHours' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'employees',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'employeeInfo',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          employeeId: '$_id',
+          employeeName: { $arrayElemAt: ['$employeeInfo.fullName', 0] },
+          totalWorkHours: 1,
+        },
+      },
+    ]);
   }
 }

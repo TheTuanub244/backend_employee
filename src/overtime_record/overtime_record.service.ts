@@ -23,16 +23,21 @@ export class OvertimeRecordService {
     employeeId: Types.ObjectId,
     date: Date,
   ) {
-    return await this.overtimeRecordSchema.findOne({ employeeId, date });
+    const dateOnly = date.setHours(0, 0, 0, 0);
+    return await this.overtimeRecordSchema.findOne({
+      employeeId,
+      date: dateOnly,
+    });
   }
   async createOverTimeRecord(overtimeRecord: any) {
     const totalHours = this.calculateTotalHours(
       overtimeRecord.startTime,
       overtimeRecord.endTime,
     );
+
     const records = new this.overtimeRecordSchema({
       employeeId: overtimeRecord.employeeId,
-      date: overtimeRecord.date,
+      date: overtimeRecord.date.setHours(0, 0, 0, 0),
       startTime: overtimeRecord.startTime,
       endTime: overtimeRecord.endTime,
       totalHours,
@@ -76,5 +81,68 @@ export class OvertimeRecordService {
     }
 
     return totalOvertimePay;
+  }
+  async getTotalOverTimeInMonth(month: string) {
+    const startOfMonth = new Date(`${month}-01`);
+    const endOfMonth = new Date(
+      new Date(startOfMonth).setMonth(startOfMonth.getMonth() + 1),
+    );
+    return await this.overtimeRecordSchema.aggregate([
+      {
+        $match: {
+          date: { $gte: startOfMonth, $lt: endOfMonth },
+          status: 'APPROVED',
+        },
+      },
+      {
+        $group: {
+          _id: '$employeeId',
+          totalOvertimeHours: { $sum: '$totalHours' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'employees',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'employeeInfo',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          employeeId: '$_id',
+          employeeName: { $arrayElemAt: ['$employeeInfo.fullName', 0] },
+          totalOvertimeHours: 1,
+        },
+      },
+    ]);
+  }
+  async getTotalOvertimeHoursInMonthByEmployee(
+    employeeId: Types.ObjectId,
+    month: string,
+  ) {
+    const startDate = new Date(`${month}-01`);
+    const endDate = new Date(
+      new Date(startDate).setMonth(startDate.getMonth() + 1),
+    );
+
+    const result = await this.overtimeRecordSchema.aggregate([
+      {
+        $match: {
+          employeeId: employeeId,
+          date: { $gte: startDate, $lt: endDate },
+          status: 'APPROVED',
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalOvertimeHours: { $sum: '$totalHours' },
+        },
+      },
+    ]);
+
+    return result.length > 0 ? result[0].totalOvertimeHours : 0;
   }
 }

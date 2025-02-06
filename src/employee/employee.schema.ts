@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { Department } from 'src/department/department.schema';
+import { Role } from './enum/roles.enum';
 
 export enum Position {
   INTERN = 'INTERN',
@@ -16,6 +17,10 @@ export enum Position {
 
 @Schema({ timestamps: true })
 export class Employee {
+  @Prop({ required: true })
+  userName: string;
+  @Prop({ required: true })
+  password: string;
   @Prop({ required: true, index: true })
   fullName: string;
   @Prop({ required: true, type: Date, index: true })
@@ -34,6 +39,8 @@ export class Employee {
     index: true,
   })
   position: Position;
+  @Prop({ required: true, enum: Role, default: Role.EMPLOYEE })
+  role: Role;
   @Prop({ require: true, default: 1500000 })
   baseSalary: number;
   @Prop({
