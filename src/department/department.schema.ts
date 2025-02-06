@@ -4,7 +4,7 @@ import { Employee } from 'src/employee/employee.schema';
 
 @Schema({ timestamps: true })
 export class Department {
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   name: string;
   @Prop({ required: true })
   description: string;

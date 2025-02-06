@@ -1,8 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { Contract } from 'src/contract/contract.schema';
 import { Department } from 'src/department/department.schema';
-import { Document } from 'src/document/document.schema';
 
 export enum Position {
   INTERN = 'INTERN',
@@ -36,8 +34,6 @@ export class Employee {
     index: true,
   })
   position: Position;
-  //   @Prop({required: true, type: Types.ObjectId, ref: ''})
-  //   workHistory: ;
   @Prop({ require: true, default: 1500000 })
   baseSalary: number;
   @Prop({
@@ -65,10 +61,6 @@ export class Employee {
 
   @Prop()
   taxCode: string;
-  @Prop({ required: true, type: Types.ObjectId, ref: 'Document' })
-  documents: Document;
-  @Prop({ required: true, type: Types.ObjectId, ref: 'Contract' })
-  contracts: Contract;
 }
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);
 
