@@ -9,8 +9,21 @@ export class ContractService {
     @InjectModel(Contract.name)
     private contractSchema: Model<Contract>,
   ) {}
-  async getAllContract() {
-    return await this.contractSchema.find();
+  async getAllContract(
+    page: number,
+    size: number,
+    field: string,
+    order: string,
+  ) {
+    const skip = (page - 1) * size;
+    const sortOrder = order === 'ASC' ? 1 : -1;
+    return await this.contractSchema
+      .find()
+      .skip(skip)
+      .limit(size)
+      .sort({
+        [field]: sortOrder,
+      });
   }
   async getContractById(contractId: Types.ObjectId) {
     return await this.contractSchema.findById(contractId);

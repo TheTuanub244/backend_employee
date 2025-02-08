@@ -30,8 +30,21 @@ export class DeductionService {
     });
     return deductions.reduce((total, deduction) => total + deduction.amount, 0);
   }
-  findAll() {
-    return `This action returns all deduction`;
+  async getAllDeduction(
+    page: number,
+    size: number,
+    field: string,
+    order: string,
+  ) {
+    const skip = (page - 1) * size;
+    const sortOrder = order === 'ASC' ? 1 : -1;
+    return await this.deductionSchema
+      .find()
+      .skip(skip)
+      .limit(size)
+      .sort({
+        [field]: sortOrder,
+      });
   }
 
   findOne(id: number) {

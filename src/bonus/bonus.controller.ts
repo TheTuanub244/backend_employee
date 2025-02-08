@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { BonusService } from './bonus.service';
 import { CreateBonusDto } from './dto/create-bonus.dto';
 import { UpdateBonusDto } from './dto/update-bonus.dto';
@@ -12,9 +21,14 @@ export class BonusController {
     return this.bonusService.createBonus(createBonusDto);
   }
 
-  @Get()
-  findAll() {
-    return this.bonusService.findAll();
+  @Get('getAllBonus')
+  getAllBonus(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('sort') sort: string,
+    @Query('order') order: string,
+  ) {
+    return this.bonusService.getAllBonus(page, size, sort, order);
   }
 
   @Get(':id')

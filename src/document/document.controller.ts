@@ -14,8 +14,13 @@ import { Types } from 'mongoose';
 export class DocumentController {
   constructor(private documentService: DocumentService) {}
   @Get('getAllDocument')
-  async getAllDocument() {
-    return this.documentService.getAllDocument();
+  async getAllDocument(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('sort') sort: string,
+    @Query('order') order: string,
+  ) {
+    return this.documentService.getAllDocument(page, size, sort, order);
   }
   @Get('getDocumentById/:id')
   async getDocumentById(@Param('id') id: string) {

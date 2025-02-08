@@ -28,7 +28,10 @@ export class AuthService {
     }
     const signInfo = { userName, role: isValidUser.role };
     return {
-      acessToken: this.jwtService.sign({ signInfo }, { expiresIn: '1h' }),
+      acessToken: this.jwtService.sign(
+        { signInfo },
+        { expiresIn: '1h', secret: 'yourSecretKey' },
+      ),
     };
   }
 }

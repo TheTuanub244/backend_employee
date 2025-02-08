@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { AllowanceService } from './allowance.service';
 import { CreateAllowanceDto } from './dto/create-allowance.dto';
 import { UpdateAllowanceDto } from './dto/update-allowance.dto';
@@ -13,9 +22,15 @@ export class AllowanceController {
     return this.allowanceService.createAllowance(createAllowanceDto);
   }
 
-  @Get()
-  findAll() {
-    return this.allowanceService.findAll();
+  @Get('getAllAlwance')
+  getAllAlwance(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('sort') sort: string,
+    @Query('order') order: string,
+
+  ) {
+    return this.allowanceService.getAllAlowance(page, size, sort, order);
   }
 
   @Get(':id')

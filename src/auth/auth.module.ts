@@ -4,7 +4,8 @@ import { AuthController } from './auth.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Employee, EmployeeSchema } from 'src/employee/employee.schema';
 import { JwtStrategy } from 'src/common/strategy/jwt.strategy';
-import { JwtService } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   controllers: [AuthController],

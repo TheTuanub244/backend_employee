@@ -17,8 +17,21 @@ export class DepartmentService {
     });
     return await newDepartment.save();
   }
-  async getAllDepartment() {
-    return await this.departmentSchema.find();
+  async getAllDepartment(
+    page: number,
+    size: number,
+    field: string,
+    order: string,
+  ) {
+    const skip = (page - 1) * size;
+    const sortOrder = order === 'ASC' ? 1 : -1;
+    return await this.departmentSchema
+      .find()
+      .skip(skip)
+      .limit(size)
+      .sort({
+        [field]: sortOrder,
+      });
   }
   async getDepartmentById(departmentId: Types.ObjectId) {
     return await this.departmentSchema.findById(departmentId);

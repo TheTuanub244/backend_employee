@@ -1,10 +1,20 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { Types } from 'mongoose';
+import { Role } from './enum/roles.enum';
 
 @Controller('employee')
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
+  @Get('getAllEmployee')
+  async getAllEmployee(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('sort') sort: string,
+    @Query('order') order: string,
+  ) {
+    return this.employeeService.getAllEmployee(page, size, sort, order);
+  }
   @Get('/getEmployeeById/:id')
   async getEmployeeById(@Param('id') id: string) {
     return this.employeeService.getEmployeeById(new Types.ObjectId(id));

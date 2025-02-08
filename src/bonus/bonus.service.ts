@@ -29,8 +29,21 @@ export class BonusService {
     });
     return bonuses.reduce((total, bonus) => total + bonus.amount, 0);
   }
-  findAll() {
-    return `This action returns all bonus`;
+  async getAllBonus(
+    page: number,
+    size: number,
+    field: string,
+    order: string,
+  ) {
+    const skip = (page - 1) * size;
+    const sortOrder = order === 'ASC' ? 1 : -1;
+    return await this.bonusSchema
+      .find()
+      .skip(skip)
+      .limit(size)
+      .sort({
+        [field]: sortOrder,
+      });
   }
 
   findOne(id: number) {

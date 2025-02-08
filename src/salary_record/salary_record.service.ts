@@ -83,8 +83,21 @@ export class SalaryRecordService {
     return 'This action adds a new salaryRecord';
   }
 
-  findAll() {
-    return `This action returns all salaryRecord`;
+  async getAllSalaryRecord(
+    page: number,
+    perPage: number,
+    field: string,
+    order: string,
+  ) {
+    const skip = (page - 1) * perPage;
+    const sortOrder = order === 'ASC' ? 1 : -1;
+    return await this.salaryRecord
+      .find()
+      .skip(skip)
+      .limit(perPage)
+      .sort({
+        [field]: sortOrder,
+      });
   }
 
   findOne(id: number) {

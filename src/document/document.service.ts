@@ -9,8 +9,21 @@ export class DocumentService {
     @InjectModel(Document.name)
     private documentSchema: Model<Document>,
   ) {}
-  async getAllDocument() {
-    return await this.documentSchema.find();
+  async getAllDocument(
+    page: number,
+    size: number,
+    field: string,
+    order: string,
+  ) {
+    const skip = (page - 1) * size;
+    const sortOrder = order === 'ASC' ? 1 : -1;
+    return await this.documentSchema
+      .find()
+      .skip(skip)
+      .limit(size)
+      .sort({
+        [field]: sortOrder,
+      });
   }
   async getDocumentById(documentId: Types.ObjectId) {
     return await this.documentSchema.findById(documentId);

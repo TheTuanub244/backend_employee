@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { SalaryRecordService } from './salary_record.service';
 import { CreateSalaryRecordDto } from './dto/create-salary_record.dto';
@@ -27,9 +28,14 @@ export class SalaryRecordController {
     return this.salaryRecordService.create(createSalaryRecordDto);
   }
 
-  @Get()
-  findAll() {
-    return this.salaryRecordService.findAll();
+  @Get('getAllSalaryRecord')
+  getAllSalaryRecord(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('sort') sort: string,
+    @Query('order') order: string,
+  ) {
+    return this.salaryRecordService.getAllSalaryRecord(page, size, sort, order);
   }
 
   @Get(':id')

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { DeductionService } from './deduction.service';
 import { CreateDeductionDto } from './dto/create-deduction.dto';
@@ -20,9 +21,14 @@ export class DeductionController {
     return this.deductionService.createDeduction(createDeductionDto);
   }
 
-  @Get()
-  findAll() {
-    return this.deductionService.findAll();
+  @Get('getAllDeduction')
+  getAllDeduction(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('sort') sort: string,
+    @Query('order') order: string,
+  ) {
+    return this.deductionService.getAllDeduction(page, size, sort, order);
   }
 
   @Get(':id')

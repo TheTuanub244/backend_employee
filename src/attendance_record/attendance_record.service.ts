@@ -91,4 +91,20 @@ export class AttendanceRecordService {
       },
     ]);
   }
+  async getAllAttendanceRecord(
+    page: number,
+    size: number,
+    field: string,
+    order: string,
+  ) {
+    const skip = (page - 1) * size;
+    const sortOrder = order === 'ASC' ? 1 : -1;
+    return await this.attendanceRecordSchema
+      .find()
+      .skip(skip)
+      .limit(size)
+      .sort({
+        [field]: sortOrder,
+      });
+  }
 }

@@ -38,4 +38,20 @@ export class LeaveRequestService {
     });
     return await newLeaveRequest.save();
   }
+  async getAllLeaveRequest(
+    page: number,
+    perPage: number,
+    field: string,
+    order: string,
+  ) {
+    const skip = (page - 1) * perPage;
+    const sortOrder = order === 'ASC' ? 1 : -1;
+    return await this.leaveRequestSchema
+      .find()
+      .skip(skip)
+      .limit(perPage)
+      .sort({
+        [field]: sortOrder,
+      });
+  }
 }

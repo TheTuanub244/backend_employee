@@ -13,6 +13,20 @@ export class OvertimeRecordController {
   async getTotalOverTimeInMonth(@Query('month') month: string) {
     return this.overtimeRecordService.getTotalOverTimeInMonth(month);
   }
+  @Get('getAllOvertimeRecord')
+  async getAllOvertimeRecord(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('sort') sort: string,
+    @Query('order') order: string,
+  ) {
+    return this.overtimeRecordService.getAllOvertimeRecord(
+      page,
+      size,
+      sort,
+      order,
+    );
+  }
   @Get('getTotalOvertimeHoursInMonthByEmployee')
   async getTotalOvertimeHoursInMonthByEmployee(
     @Query('month') month: string,

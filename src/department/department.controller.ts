@@ -19,8 +19,13 @@ export class DepartmentController {
     return this.departmentService.createDepartment(data);
   }
   @Get('getAllDepartment')
-  async getAllDepartment() {
-    return this.departmentService.getAllDepartment();
+  async getAllDepartment(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('sort') sort: string,
+    @Query('order') order: string,
+  ) {
+    return this.departmentService.getAllDepartment(page, size, sort, order);
   }
   @Get('getDepartmentById/:id')
   async getDepartmentById(@Param('id') id: string) {

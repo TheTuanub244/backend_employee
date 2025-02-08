@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { TaxRecordService } from './tax_record.service';
 import { CreateTaxRecordDto } from './dto/create-tax_record.dto';
 import { UpdateTaxRecordDto } from './dto/update-tax_record.dto';
@@ -12,9 +21,14 @@ export class TaxRecordController {
     return this.taxRecordService.create(createTaxRecordDto);
   }
 
-  @Get()
-  findAll() {
-    return this.taxRecordService.findAll();
+  @Get('getAllTaxRecord')
+  getAllTaxRecord(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('sort') sort: string,
+    @Query('order') order: string,
+  ) {
+    return this.taxRecordService.getAllTaxRecord(page, size, sort, order);
   }
 
   @Get(':id')
@@ -23,7 +37,10 @@ export class TaxRecordController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTaxRecordDto: UpdateTaxRecordDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateTaxRecordDto: UpdateTaxRecordDto,
+  ) {
     return this.taxRecordService.update(+id, updateTaxRecordDto);
   }
 
