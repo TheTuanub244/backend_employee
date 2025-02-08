@@ -12,14 +12,7 @@ async function bootstrap() {
     res.header('Access-Control-Allow-Credentials', 'true');
     next();
   });
-  app.enableCors({
-    origin: [
-      'https://maithetuan-20211010.web.app',
-      'http://localhost:3000',
-      'http://192.169.101.137:3000',
-    ],
-    credentials: true,
-  });
+  app.enableCors();
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
