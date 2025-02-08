@@ -48,7 +48,7 @@ export class EmployeeService {
     const newEmployee = new this.employeeSchema({
       fullName: employeeInfo.fullName,
       dob: employeeInfo.dob,
-      department: employeeInfo.department,
+      department: new Types.ObjectId(employeeInfo.department),
       userName: employeeInfo.userName,
       password: hashedPassword,
       role: employeeInfo.role,
@@ -67,7 +67,7 @@ export class EmployeeService {
       contractType: employeeInfo.contract.contractType,
       status: employeeInfo.contract.status,
       signDate: employeeInfo.contract.signDate,
-      attachments: employeeInfo.contract.attachments,
+      attachments: employeeInfo.contract.attachments || [],
     });
     return {
       employee: savedEmployee,

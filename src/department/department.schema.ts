@@ -8,7 +8,7 @@ export class Department {
   name: string;
   @Prop({ required: true })
   description: string;
-  @Prop({ required: true, type: mongoose.Schema.ObjectId, ref: 'Employee' })
+  @Prop({ required: false, type: mongoose.Schema.ObjectId, ref: 'Employee' })
   manager: Employee;
 }
 export const DepartmentSchema = SchemaFactory.createForClass(Department);

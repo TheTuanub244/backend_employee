@@ -8,7 +8,7 @@ import { Types } from 'mongoose';
 export class AllowanceController {
   constructor(private readonly allowanceService: AllowanceService) {}
 
-  @Post()
+  @Post('createAllowance')
   createAllowance(@Body() createAllowanceDto: CreateAllowanceDto) {
     return this.allowanceService.createAllowance(createAllowanceDto);
   }

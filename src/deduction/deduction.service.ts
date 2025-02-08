@@ -12,11 +12,13 @@ export class DeductionService {
     private deductionSchema: Model<Deduction>,
   ) {}
   async createDeduction(deductionDto: any){
+    const fixDate = new Date(deductionDto.month);
+    fixDate.setUTCHours(0, 0, 0, 0);
     const newDeduction = new this.deductionSchema({
       type: deductionDto.type,
       amount: deductionDto.amount,
       employeeId: deductionDto.employeeId,
-      month: deductionDto.month,
+      month: fixDate,
       reason: deductionDto.reason
     });
     return await newDeduction.save()

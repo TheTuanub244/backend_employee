@@ -13,8 +13,8 @@ export class Allowance {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Employee' })
   employeeId: Employee;
 
-  @Prop({ required: true })
-  month: string; // Tháng áp dụng phụ cấp
+  @Prop({ required: true, type: Date })
+  month: Date; // Tháng áp dụng phụ cấp
 }
 
 export const AllowanceSchema = SchemaFactory.createForClass(Allowance);

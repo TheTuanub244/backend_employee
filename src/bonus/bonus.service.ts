@@ -12,11 +12,13 @@ export class BonusService {
     private bonusSchema: Model<Bonus>,
   ) {}
   async createBonus(bonusDto: any) {
+    const fixDate = new Date(bonusDto.month);
+    fixDate.setUTCHours(0, 0, 0, 0);
     const newBonus = new this.bonusSchema({
       name: bonusDto.name,
       amount: bonusDto.amount,
       employeeId: bonusDto.employeeId,
-      month: bonusDto.month,
+      month: fixDate,
     });
     return await newBonus.save();
   }

@@ -13,8 +13,8 @@ export class Bonus {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Employee' })
   employeeId: Employee;
 
-  @Prop({ required: true })
-  month: string; // Tháng nhận thưởng
+  @Prop({ required: true, type: Date })
+  month: Date; // Tháng nhận thưởng
 }
 
 export const BonusSchema = SchemaFactory.createForClass(Bonus);

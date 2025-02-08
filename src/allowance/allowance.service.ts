@@ -16,11 +16,13 @@ export class AllowanceService {
     return allowances.reduce((total, allowance) => total + allowance.amount, 0);
   }
   async createAllowance(createAllowanceDto: any) {
+    const fixDate = new Date(createAllowanceDto.month);
+    fixDate.setUTCHours(0, 0, 0, 0);
     const newAllowance = new this.allowanceSchema({
       name: createAllowanceDto.name,
       amount: createAllowanceDto.amount,
       employeeId: createAllowanceDto.employeeId,
-      month: createAllowanceDto.month,
+      month: fixDate,
     });
     return newAllowance.save();
   }

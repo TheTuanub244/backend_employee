@@ -48,6 +48,7 @@ export class Employee {
       bankName: String,
       accountNumber: String,
     },
+    _id: false,
   })
   bankAccount: {
     bankName: string;
@@ -59,6 +60,7 @@ export class Employee {
       healthInsuranceRate: Number,
       unemploymentInsuranceRate: Number,
     },
+    _id: false,
   })
   insurance: {
     socialInsuranceRate: number;
