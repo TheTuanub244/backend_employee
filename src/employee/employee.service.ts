@@ -26,7 +26,7 @@ export class EmployeeService {
   }
   async createEmployeeByAdmin(employeeDto: any) {
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(employeeDto.password, salt)
+    const hashedPassword = await bcrypt.hash(employeeDto.password, salt);
     const newEmployee = new this.employeeSchema({
       fullName: employeeDto.fullName,
       dob: employeeDto.dob,
@@ -122,9 +122,9 @@ export class EmployeeService {
     order: string,
   ) {
     const skip = (page - 1) * size;
-    console.log(size)
+    const getAllEmployeeCount = await this.employeeSchema.countDocuments();
     const sortOrder = order === 'ASC' ? 1 : -1;
-    return await this.employeeSchema
+    const getAllEmployee = await this.employeeSchema
       .find()
       .populate('department')
       .skip(skip)
@@ -132,6 +132,10 @@ export class EmployeeService {
       .sort({
         [field]: sortOrder,
       });
+    return {
+      data: getAllEmployee,
+      totalCount: getAllEmployeeCount,
+    };
   }
   async getAllEmployeeByDepartment(
     deparment: string,
