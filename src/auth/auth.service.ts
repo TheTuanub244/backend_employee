@@ -13,9 +13,11 @@ export class AuthService {
   ) {}
   async login(user: any) {
     const { userName, password } = user;
-    const isValidUser = await this.employeeSchema.findOne({
-      userName,
-    });
+    const isValidUser = await this.employeeSchema
+      .findOne({
+        userName,
+      })
+      .populate('department');
     if (!isValidUser) {
       throw new UnauthorizedException('Invalid username or password');
     }
@@ -26,7 +28,11 @@ export class AuthService {
     if (!isValidPassword) {
       throw new UnauthorizedException('Invalid username or password');
     }
-    const signInfo = { userName, role: isValidUser.role };
+    const signInfo = {
+      userName,
+      role: isValidUser.role,
+      department: isValidUser.department.name,
+    };
     return {
       acessToken: this.jwtService.sign(
         { signInfo },

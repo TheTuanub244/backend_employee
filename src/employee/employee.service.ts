@@ -122,6 +122,7 @@ export class EmployeeService {
     order: string,
   ) {
     const skip = (page - 1) * size;
+    console.log(size)
     const sortOrder = order === 'ASC' ? 1 : -1;
     return await this.employeeSchema
       .find()
@@ -131,5 +132,37 @@ export class EmployeeService {
       .sort({
         [field]: sortOrder,
       });
+  }
+  async getAllEmployeeByDepartment(
+    deparment: string,
+    page: number,
+    size: number,
+    field: string,
+    order: string,
+  ) {
+    const skip = (page - 1) * size;
+    size = size * 1;
+    const sortOrder = order === 'ASC' ? 1 : -1;
+    return await this.employeeSchema.aggregate([
+      {
+        $lookup: {
+          from: 'departments',
+          localField: 'department',
+          foreignField: '_id',
+          as: 'department',
+        },
+      },
+      {
+        $unwind: '$department',
+      },
+      {
+        $match: {
+          'department.name': deparment,
+        },
+      },
+      { $sort: { [field]: sortOrder } },
+      { $skip: skip },
+      { $limit: size },
+    ]);
   }
 }

@@ -53,7 +53,14 @@ export class RolesGuard implements CanActivate {
       );
       throw new ForbiddenException('Insufficient permissions');
     }
-
+    if (payload.signInfo.role !== Role.EMPLOYEE) {
+      const queryDepartment = request.query.department;
+      if (queryDepartment && payload.signInfo.department !== queryDepartment) {
+        throw new ForbiddenException(
+          `You are not authorized to access employees of this department`,
+        );
+      }
+    }
     return true;
   }
   private extractTokenFromHeader(request: any): string | null {
