@@ -1,12 +1,16 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { Types } from 'mongoose';
 import { Role } from './enum/roles.enum';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('employee')
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
   @Get('getAllEmployee')
+  @UseGuards(RolesGuard)
+  @Roles(Role.EMPLOYEE, Role.ADMIN)
   async getAllEmployee(
     @Query('page') page: number,
     @Query('size') size: number,

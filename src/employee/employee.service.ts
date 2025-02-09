@@ -125,6 +125,7 @@ export class EmployeeService {
     const sortOrder = order === 'ASC' ? 1 : -1;
     return await this.employeeSchema
       .find()
+      .populate('department')
       .skip(skip)
       .limit(size)
       .sort({

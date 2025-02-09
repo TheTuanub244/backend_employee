@@ -22,35 +22,27 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    if (!requiredRoles) {
-      return true;
-    }
-
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException('You must sign in');
     }
     let payload;
-
     try {
-      payload = this.jwtService.verify(token);
-    } catch () {
+      payload = this.jwtService.verify(token, { secret: 'yourSecretKey' });
+    } catch (error) {
       throw new UnauthorizedException(
         'You must sign in to perform this action',
       );
     }
 
     request.user = payload;
-    if (!payload.signInfo) {
-      if (payload.uid) {
-        return true;
-      }
+
+    if (!requiredRoles) {
+      return true;
     }
-    const hasRole = requiredRoles.some((role) =>
-      payload.signInfo.role
-        .map((r) => r.toLowerCase())
-        .includes(role.toLowerCase()),
+    const hasRole = requiredRoles.some(
+      (role) => payload.signInfo.role === role,
     );
     if (!hasRole) {
       console.log(
