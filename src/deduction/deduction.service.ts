@@ -11,7 +11,7 @@ export class DeductionService {
     @InjectModel(Deduction.name)
     private deductionSchema: Model<Deduction>,
   ) {}
-  async createDeduction(deductionDto: any){
+  async createDeduction(deductionDto: any) {
     const fixDate = new Date(deductionDto.month);
     fixDate.setUTCHours(0, 0, 0, 0);
     const newDeduction = new this.deductionSchema({
@@ -19,9 +19,9 @@ export class DeductionService {
       amount: deductionDto.amount,
       employeeId: deductionDto.employeeId,
       month: fixDate,
-      reason: deductionDto.reason
+      reason: deductionDto.reason,
     });
-    return await newDeduction.save()
+    return await newDeduction.save();
   }
   async getTotalDeduction(employeeId: Types.ObjectId, month: string) {
     const deductions = await this.deductionSchema.find({
@@ -38,13 +38,19 @@ export class DeductionService {
   ) {
     const skip = (page - 1) * size;
     const sortOrder = order === 'ASC' ? 1 : -1;
-    return await this.deductionSchema
+    const getAllDeduction = await this.deductionSchema
       .find()
+      .populate('employeeId')
       .skip(skip)
       .limit(size)
       .sort({
         [field]: sortOrder,
       });
+    const countAllDeduction = await this.deductionSchema.countDocuments();
+    return {
+      data: getAllDeduction,
+      totalCount: countAllDeduction,
+    };
   }
 
   findOne(id: number) {

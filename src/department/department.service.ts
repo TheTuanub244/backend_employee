@@ -25,13 +25,19 @@ export class DepartmentService {
   ) {
     const skip = (page - 1) * size;
     const sortOrder = order === 'ASC' ? 1 : -1;
-    return await this.departmentSchema
+    const getAllDepartment = await this.departmentSchema
       .find()
+      .populate('manager')
       .skip(skip)
       .limit(size)
       .sort({
         [field]: sortOrder,
       });
+    const countAllDepartment = await this.departmentSchema.countDocuments();
+    return {
+      totalCount: countAllDepartment,
+      data: getAllDepartment,
+    };
   }
   async getDepartmentById(departmentId: Types.ObjectId) {
     return await this.departmentSchema.findById(departmentId);

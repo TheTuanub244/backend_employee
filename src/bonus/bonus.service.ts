@@ -29,21 +29,23 @@ export class BonusService {
     });
     return bonuses.reduce((total, bonus) => total + bonus.amount, 0);
   }
-  async getAllBonus(
-    page: number,
-    size: number,
-    field: string,
-    order: string,
-  ) {
+  async getAllBonus(page: number, size: number, field: string, order: string) {
     const skip = (page - 1) * size;
     const sortOrder = order === 'ASC' ? 1 : -1;
-    return await this.bonusSchema
+    const getAllBonus = await this.bonusSchema
       .find()
+      .populate('employeeId')
       .skip(skip)
       .limit(size)
       .sort({
         [field]: sortOrder,
       });
+    const countAllBonus = await this.bonusSchema.countDocuments();
+
+    return {
+      totalCount: countAllBonus,
+      data: getAllBonus,
+    };
   }
 
   findOne(id: number) {

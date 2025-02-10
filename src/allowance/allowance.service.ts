@@ -35,13 +35,19 @@ export class AllowanceService {
   ) {
     const skip = (page - 1) * size;
     const sortOrder = order === 'ASC' ? 1 : -1;
-    return await this.allowanceSchema
+    const getAllAllowance = await this.allowanceSchema
       .find()
+      .populate('employeeId')
       .skip(skip)
       .limit(size)
       .sort({
         [field]: sortOrder,
       });
+    const countAllAllwance = await this.allowanceSchema.countDocuments();
+    return {
+      data: getAllAllowance,
+      totalCount: countAllAllwance,
+    };
   }
 
   async findOne(id: Types.ObjectId) {

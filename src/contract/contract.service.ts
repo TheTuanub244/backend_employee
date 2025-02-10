@@ -17,13 +17,19 @@ export class ContractService {
   ) {
     const skip = (page - 1) * size;
     const sortOrder = order === 'ASC' ? 1 : -1;
-    return await this.contractSchema
+    const getAllContract = await this.contractSchema
       .find()
+      .populate('employeeId')
       .skip(skip)
       .limit(size)
       .sort({
         [field]: sortOrder,
       });
+    const countAllContract = await this.contractSchema.countDocuments();
+    return {
+      datta: getAllContract,
+      totalCount: countAllContract,
+    };
   }
   async getContractById(contractId: Types.ObjectId) {
     return await this.contractSchema.findById(contractId);

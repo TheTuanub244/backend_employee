@@ -99,12 +99,19 @@ export class AttendanceRecordService {
   ) {
     const skip = (page - 1) * size;
     const sortOrder = order === 'ASC' ? 1 : -1;
-    return await this.attendanceRecordSchema
+    const getAllAttendanceRecord = await this.attendanceRecordSchema
       .find()
+      .populate('employeeId')
       .skip(skip)
       .limit(size)
       .sort({
         [field]: sortOrder,
       });
+    const countGetAllAttendanceRecord =
+      await this.attendanceRecordSchema.countDocuments();
+    return {
+      data: getAllAttendanceRecord,
+      totalCount: countGetAllAttendanceRecord,
+    };
   }
 }
