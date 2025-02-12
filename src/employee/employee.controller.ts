@@ -17,8 +17,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
   @Get('getAllEmployee')
-  @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN)
+
   async getAllEmployee(
     @Query('page') page: number,
     @Query('size') size: number,

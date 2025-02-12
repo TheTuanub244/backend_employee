@@ -126,7 +126,14 @@ export class EmployeeService {
     const sortOrder = order === 'ASC' ? 1 : -1;
     const getAllEmployee = await this.employeeSchema
       .find()
-      .populate('department')
+      .populate({
+        path: 'department',
+        populate: {
+          path: 'manager',
+          model: 'Employee',
+        },
+      })
+
       .skip(skip)
       .limit(size)
       .sort({
