@@ -27,6 +27,12 @@ export class EmployeeController {
   ) {
     return this.employeeService.getAllEmployee(page, size, sort, order);
   }
+  @UseGuards(RolesGuard)
+  @Roles(Role.EMPLOYEE, Role.DEPARTMENT_MANAGER, Role.ADMIN)
+  @Post('updateEmployee/:id')
+  async updateEmployee(@Param('id') id: string, @Body() data: any) {
+    return this.employeeService.updateEmployee(new Types.ObjectId(id), data);
+  }
   @Get('getAllEmployeeByDepartment')
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
@@ -77,5 +83,4 @@ export class EmployeeController {
   async searchEmployeeByDepartmentName(@Query() departmentName: string) {
     return this.employeeService.searchEmployeeByDepartmentName(departmentName);
   }
-
 }

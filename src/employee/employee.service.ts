@@ -169,4 +169,12 @@ export class EmployeeService {
       { $limit: size },
     ]);
   }
+  async updateEmployee(employeeId: Types.ObjectId, employeeDto: any) {
+    const updatedEmployee = await this.employeeSchema.findByIdAndUpdate(
+      employeeId,
+      employeeDto,
+    );
+    const savedEmployee = await updatedEmployee.save();
+    return savedEmployee;
+  }
 }
