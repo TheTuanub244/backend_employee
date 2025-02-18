@@ -14,7 +14,7 @@ export class EmployeeService {
     private departmentService: DepartmentService,
   ) {}
   async getEmployeeById(id: Types.ObjectId) {
-    return this.employeeSchema.findById(id);
+    return this.employeeSchema.findById(id).select('-password');
   }
   async getBaseSalary(employeeId: Types.ObjectId): Promise<number> {
     const employee = await this.getEmployeeById(employeeId);
@@ -75,17 +75,21 @@ export class EmployeeService {
     };
   }
   async searchEmployeeByName(fullName: string) {
-    return await this.employeeSchema.find({
-      fullName: {
-        $regex: fullName,
-        $options: 'i',
-      },
-    });
+    return await this.employeeSchema
+      .find({
+        fullName: {
+          $regex: fullName,
+          $options: 'i',
+        },
+      })
+      .select('-password');
   }
   async searchEmployeeByPosition(position: string) {
-    return await this.employeeSchema.find({
-      position,
-    });
+    return await this.employeeSchema
+      .find({
+        position,
+      })
+      .select('-password');
   }
   async searchEmployeeByDepartmentName(departmentName: string) {
     return await this.employeeSchema.aggregate([
@@ -101,6 +105,11 @@ export class EmployeeService {
         $unwind: '$departmentInfo',
       },
       {
+        $project: {
+          password: 0,
+        },
+      },
+      {
         $match: {
           '$departmentInfo.name': {
             $regex: departmentName,
@@ -111,9 +120,11 @@ export class EmployeeService {
     ]);
   }
   async searchEmployeeByDepartmentId(departmentId: Types.ObjectId) {
-    return await this.employeeSchema.find({
-      department: departmentId,
-    });
+    return await this.employeeSchema
+      .find({
+        department: departmentId,
+      })
+      .select('-password');
   }
   async getAllEmployee(
     page: number,
@@ -126,6 +137,7 @@ export class EmployeeService {
     const sortOrder = order === 'ASC' ? 1 : -1;
     const getAllEmployee = await this.employeeSchema
       .find()
+      .select('-password')
       .populate({
         path: 'department',
         populate: {
@@ -165,6 +177,11 @@ export class EmployeeService {
       },
       {
         $unwind: '$department',
+      },
+      {
+        $project: {
+          password: 0,
+        },
       },
       {
         $match: {
