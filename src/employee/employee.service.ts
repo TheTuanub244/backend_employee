@@ -201,4 +201,9 @@ export class EmployeeService {
     const savedEmployee = await updatedEmployee.save();
     return savedEmployee;
   }
+  async deleteEmployeeByAdminAndManager(employeeId: Types.ObjectId) {
+    const deletedEmployee =
+      await this.employeeSchema.findByIdAndDelete(employeeId);
+    return deletedEmployee.save();
+  }
 }

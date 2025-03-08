@@ -18,6 +18,7 @@ import { AllowanceModule } from './allowance/allowance.module';
 import { AuthModule } from './auth/auth.module';
 import * as dotenv from 'dotenv';
 import { JwtModule } from '@nestjs/jwt';
+import { PerformanceReviewsModule } from './performance_reviews/performance_reviews.module';
 
 dotenv.config();
 @Module({
@@ -36,7 +37,8 @@ dotenv.config();
     DeductionModule,
     TaxRecordModule,
     AuthModule,
-    JwtModule
+    JwtModule,
+    PerformanceReviewsModule
   ],
   controllers: [AppController, EmployeeController],
   providers: [AppService],
