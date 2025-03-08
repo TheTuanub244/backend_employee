@@ -94,17 +94,6 @@ export class EmployeeService {
   async searchEmployeeByDepartmentName(departmentName: string) {
     return await this.employeeSchema.aggregate([
       {
-        $lookup: {
-          from: 'departments',
-          localField: 'department',
-          foreignField: '_id',
-          as: 'departmentInfo',
-        },
-      },
-      {
-        $unwind: '$departmentInfo',
-      },
-      {
         $project: {
           password: 0,
         },
@@ -138,14 +127,6 @@ export class EmployeeService {
     const getAllEmployee = await this.employeeSchema
       .find()
       .select('-password')
-      .populate({
-        path: 'department',
-        populate: {
-          path: 'manager',
-          model: 'Employee',
-        },
-      })
-
       .skip(skip)
       .limit(size)
       .sort({
@@ -167,17 +148,6 @@ export class EmployeeService {
     size = size * 1;
     const sortOrder = order === 'ASC' ? 1 : -1;
     return await this.employeeSchema.aggregate([
-      {
-        $lookup: {
-          from: 'departments',
-          localField: 'department',
-          foreignField: '_id',
-          as: 'department',
-        },
-      },
-      {
-        $unwind: '$department',
-      },
       {
         $project: {
           password: 0,
