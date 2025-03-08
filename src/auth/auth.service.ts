@@ -38,7 +38,7 @@ export class AuthService {
         { signInfo },
         { expiresIn: '1h', secret: 'yourSecretKey' },
       ),
-      user,
+      user: isValidUser,
     };
   }
 }
