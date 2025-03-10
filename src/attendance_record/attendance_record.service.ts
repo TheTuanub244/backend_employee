@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Type } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { AttendanceRecord } from './attendance_record.schema';
+import { AttendanceRecord, Status } from './attendance_record.schema';
 import { Model, Types } from 'mongoose';
 import { OvertimeRecordService } from 'src/overtime_record/overtime_record.service';
 
@@ -12,6 +12,8 @@ export class AttendanceRecordService {
     private readonly overTimeRecordService: OvertimeRecordService,
   ) {}
   async calculateTotalHours(startTime: Date, endTime: Date) {
+    endTime = new Date(endTime)
+
     if (endTime <= startTime) {
       throw new Error('End time must be after start time.');
     }
@@ -40,6 +42,52 @@ export class AttendanceRecordService {
       notes: attendanceRecordDto.notes || null,
     });
     return await newAttendanceRecord.save();
+  }
+  async checkIn(
+    employeeId: Types.ObjectId,
+    check_in_hour: Date,
+    work_hour: Date,
+  ) {
+    let status;
+    if (check_in_hour > work_hour) {
+      status = Status.LATE;
+    } else {
+      status = Status.PRESENT;
+    }
+    const newAttendanceRecord = new this.attendanceRecordSchema({
+      employeeId: employeeId,
+      checkIn: check_in_hour,
+      status,
+    });
+
+    const savedAttendanceRecord = await newAttendanceRecord.save();
+    return savedAttendanceRecord;
+  }
+  async checkOut(
+    employeeId: Types.ObjectId,
+    check_out_hour: Date,
+    note: string,
+  ) {
+    const findCheckIn = await this.attendanceRecordSchema.findOne({
+      employeeId,
+    });
+    if (!findCheckIn) {
+      return {
+        message: 'Bạn chưa chấm công',
+      };
+    } else {
+      const totalHours = await this.calculateTotalHours(
+        findCheckIn.checkIn,
+        check_out_hour,
+      );
+      const updateAttendanceRecord =
+        await this.attendanceRecordSchema.findByIdAndUpdate(findCheckIn._id, {
+          checkOut: check_out_hour,
+          notes: note,
+          workHours: totalHours,
+        });
+      return updateAttendanceRecord.save();
+    }
   }
   async getTotalWorkHoursByEmployee(
     employeeId: Types.ObjectId,

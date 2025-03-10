@@ -20,7 +20,7 @@ export class AttendanceRecord {
   employeeId: Employee;
   @Prop({ required: true, type: Date, index: true })
   checkIn: Date;
-  @Prop({ required: true, type: Date })
+  @Prop({ required: false, type: Date })
   checkOut: Date;
   @Prop({})
   workHours: number;

@@ -17,6 +17,22 @@ export class AttendanceRecordController {
       month,
     );
   }
+  @Post('/checkOut/:id')
+  async checkOut(@Param('id') id: string, @Body() body: any) {
+    return this.attendanceRecordService.checkOut(
+      new Types.ObjectId(id),
+      body.check_out_hour,
+      body.note,
+    );
+  }
+  @Post('/checkIn/:id')
+  async checkIn(@Param('id') id: string, @Body() body: any) {
+    return this.attendanceRecordService.checkIn(
+      new Types.ObjectId(id),
+      body.check_in_hour,
+      body.work_hour,
+    );
+  }
   @Post('createAttendanceRecordByAdmin')
   async createAttendanceRecordByAdmin(@Body() data: any) {
     return this.attendanceRecordService.createAttendanceRecordByAdmin(
