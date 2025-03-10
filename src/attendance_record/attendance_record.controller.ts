@@ -17,6 +17,12 @@ export class AttendanceRecordController {
       month,
     );
   }
+  @Get('/getAllMyAttendanceRecord/:id')
+  async getAllMyAttendanceRecord(@Query('id') id: string) {
+    return this.attendanceRecordService.getAllMyAttendanceRecord(
+      new Types.ObjectId(id),
+    );
+  }
   @Post('/checkOut/:id')
   async checkOut(@Param('id') id: string, @Body() body: any) {
     return this.attendanceRecordService.checkOut(

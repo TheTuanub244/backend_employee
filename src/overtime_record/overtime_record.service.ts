@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { OvertimeRecord, OverTimeRecordSchema } from './overtime_record.schema';
+import { OvertimeRecord, Status } from './overtime_record.schema';
 
 @Injectable()
 export class OvertimeRecordService {
@@ -18,6 +18,23 @@ export class OvertimeRecordService {
     const totalHours = totalMilliseconds / (1000 * 60 * 60);
 
     return parseFloat(totalHours.toFixed(2));
+  }
+  async approveOTRecord(id: Types.ObjectId) {
+    const findOTRecord = await this.overtimeRecordSchema.findByIdAndUpdate(id, {
+      status: Status.APPROVED,
+    });
+    return await findOTRecord.save();
+  }
+  async getAllMyOTRecord(employeeId: Types.ObjectId) {
+    return await this.overtimeRecordSchema.find({
+      employeeId,
+    });
+  }
+  async rejectOTRecord(id: Types.ObjectId) {
+    const findOTRecord = await this.overtimeRecordSchema.findByIdAndUpdate(id, {
+      status: Status.REJECTED,
+    });
+    return await findOTRecord.save();
   }
   async getOvertimeRecordWithEmployeeAndDate(
     employeeId: Types.ObjectId,

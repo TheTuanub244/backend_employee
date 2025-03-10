@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { LeaveRequest } from './leave_request.schema';
-import { Model } from 'mongoose';
+import { LeaveRequest, Status } from './leave_request.schema';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class LeaveRequestService {
@@ -17,14 +17,17 @@ export class LeaveRequestService {
 
     return diffInDays + 1; // +1 để tính cả ngày bắt đầu
   }
-
+  async getAllMyLeaveRequest(employeeId: Types.ObjectId) {
+    return await this.leaveRequestSchema.find({
+      employeeId,
+    });
+  }
   async createLeaveRequest({
     employeeId,
     leaveType,
     startDate,
     endDate,
     reason,
-    status,
   }) {
     const totalDays = this.calculateTotalDays(startDate, endDate);
     const newLeaveRequest = new this.leaveRequestSchema({
@@ -34,9 +37,27 @@ export class LeaveRequestService {
       endDate,
       totalDays,
       reason,
-      status,
+      status: Status.PENDING,
     });
     return await newLeaveRequest.save();
+  }
+  async approveLeaveRequest(employeeId: Types.ObjectId) {
+    const updateLeaveRequest = await this.leaveRequestSchema.findByIdAndUpdate(
+      employeeId,
+      {
+        status: Status.APPROVED,
+      },
+    );
+    return await updateLeaveRequest.save();
+  }
+  async rejectLeaveRequest(employeeId: Types.ObjectId) {
+    const updateLeaveRequest = await this.leaveRequestSchema.findByIdAndUpdate(
+      employeeId,
+      {
+        status: Status.REJECTED,
+      },
+    );
+    return await updateLeaveRequest.save();
   }
   async getAllLeaveRequest(
     page: number,

@@ -12,7 +12,7 @@ export class AttendanceRecordService {
     private readonly overTimeRecordService: OvertimeRecordService,
   ) {}
   async calculateTotalHours(startTime: Date, endTime: Date) {
-    endTime = new Date(endTime)
+    endTime = new Date(endTime);
 
     if (endTime <= startTime) {
       throw new Error('End time must be after start time.');
@@ -88,6 +88,11 @@ export class AttendanceRecordService {
         });
       return updateAttendanceRecord.save();
     }
+  }
+  async getAllMyAttendanceRecord(employeeId: Types.ObjectId) {
+    return await this.attendanceRecordSchema.find({
+      employeeId,
+    });
   }
   async getTotalWorkHoursByEmployee(
     employeeId: Types.ObjectId,
