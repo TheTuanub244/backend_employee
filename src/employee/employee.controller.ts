@@ -76,7 +76,10 @@ export class EmployeeController {
   async searchEmployeeByName(@Body() data: any) {
     return this.employeeService.searchEmployee(data.value, data.type);
   }
-
+  @Post('searchEmployeeByDOB')
+  async searchEmployeeByDOB(@Body() data: any) {
+    return this.employeeService.searchEmployeeByDOB(data.dob);
+  }
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
   @Delete('deleteEmployeeByAdminAndManager/:id')

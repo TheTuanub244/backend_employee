@@ -84,6 +84,13 @@ export class EmployeeService {
       })
       .select('-password');
   }
+  async searchEmployeeByDOB(dob: Date) {
+    return await this.employeeSchema
+      .find({
+        dob,
+      })
+      .select('-password');
+  }
   async getAllEmployee(
     page: number,
     size: number,
