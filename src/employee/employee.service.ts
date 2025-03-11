@@ -74,44 +74,13 @@ export class EmployeeService {
       contract: newContract,
     };
   }
-  async searchEmployeeByName(fullName: string) {
+  async searchEmployee(value: string, type: string) {
     return await this.employeeSchema
       .find({
-        fullName: {
-          $regex: fullName,
+        [type]: {
+          $regex: value,
           $options: 'i',
         },
-      })
-      .select('-password');
-  }
-  async searchEmployeeByPosition(position: string) {
-    return await this.employeeSchema
-      .find({
-        position,
-      })
-      .select('-password');
-  }
-  async searchEmployeeByDepartmentName(departmentName: string) {
-    return await this.employeeSchema.aggregate([
-      {
-        $project: {
-          password: 0,
-        },
-      },
-      {
-        $match: {
-          '$departmentInfo.name': {
-            $regex: departmentName,
-            $options: 'i',
-          },
-        },
-      },
-    ]);
-  }
-  async searchEmployeeByDepartmentId(departmentId: Types.ObjectId) {
-    return await this.employeeSchema
-      .find({
-        department: departmentId,
       })
       .select('-password');
   }

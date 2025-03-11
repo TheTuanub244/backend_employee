@@ -72,18 +72,11 @@ export class EmployeeController {
   async addNewEmployee(@Body() data: any) {
     return this.employeeService.addNewEmployee(data);
   }
-  @Get('searchEmployeeByName')
-  async searchEmployeeByName(@Query() fullName: string) {
-    return this.employeeService.searchEmployeeByName(fullName);
+  @Post('searchEmployee')
+  async searchEmployeeByName(@Body() data: any) {
+    return this.employeeService.searchEmployee(data.value, data.type);
   }
-  @Get('searchEmployeeByPosition')
-  async searchEmployeeByPosition(@Query() position: string) {
-    return this.employeeService.searchEmployeeByPosition(position);
-  }
-  @Get('searchEmployeeByDepartmentName')
-  async searchEmployeeByDepartmentName(@Query() departmentName: string) {
-    return this.employeeService.searchEmployeeByDepartmentName(departmentName);
-  }
+
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
   @Delete('deleteEmployeeByAdminAndManager/:id')
