@@ -172,6 +172,9 @@ export class EmployeeService {
     return savedEmployee;
   }
   async deleteEmployeeByAdminAndManager(employeeId: Types.ObjectId) {
-    return await this.employeeSchema.findByIdAndDelete(employeeId);
+    await this.employeeSchema.findByIdAndDelete(employeeId);
+    return {
+      message: 'Xóa nhân viên thành công',
+    };
   }
 }

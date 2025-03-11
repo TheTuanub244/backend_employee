@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { OvertimeRecordService } from './overtime_record.service';
 import { Types } from 'mongoose';
 import { RolesGuard } from 'src/common/guards/roles.guard';
@@ -33,17 +33,17 @@ export class OvertimeRecordController {
   @UseGuards(RolesGuard)
   @Roles(Role.DEPARTMENT_MANAGER, Role.ADMIN)
   @Get('approveOTRecord/:id')
-  async approveOTRecord(@Query('id') id: string) {
+  async approveOTRecord(@Param('id') id: string) {
     return this.overtimeRecordService.approveOTRecord(new Types.ObjectId(id));
   }
   @UseGuards(RolesGuard)
   @Roles(Role.DEPARTMENT_MANAGER, Role.ADMIN)
   @Get('rejectOTRecord/:id')
-  async rejectOTRecord(@Query('id') id: string) {
+  async rejectOTRecord(@Param('id') id: string) {
     return this.overtimeRecordService.rejectOTRecord(new Types.ObjectId(id));
   }
   @Get('getAllMyOTRecord/:id')
-  async getAllMyOTRecord(@Query('id') id: string) {
+  async getAllMyOTRecord(@Param('id') id: string) {
     return this.overtimeRecordService.getAllMyOTRecord(new Types.ObjectId(id));
   }
   @Get('getTotalOvertimeHoursInMonthByEmployee')

@@ -86,8 +86,8 @@ export class EmployeeController {
   }
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
-  @Delete('deleteEmployeeByAdminAndManager')
-  async deleteEmployeeByAdminAndManager(@Query('id') id: string) {
+  @Delete('deleteEmployeeByAdminAndManager/:id')
+  async deleteEmployeeByAdminAndManager(@Param('id') id: string) {
     return this.employeeService.deleteEmployeeByAdminAndManager(
       new Types.ObjectId(id),
     );

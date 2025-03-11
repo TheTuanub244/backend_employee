@@ -18,7 +18,7 @@ export class AttendanceRecordController {
     );
   }
   @Get('/getAllMyAttendanceRecord/:id')
-  async getAllMyAttendanceRecord(@Query('id') id: string) {
+  async getAllMyAttendanceRecord(@Param('id') id: string) {
     return this.attendanceRecordService.getAllMyAttendanceRecord(
       new Types.ObjectId(id),
     );

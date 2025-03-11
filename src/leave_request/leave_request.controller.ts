@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { LeaveRequestService } from './leave_request.service';
 import { Types } from 'mongoose';
 import { RolesGuard } from 'src/common/guards/roles.guard';
@@ -20,7 +20,7 @@ export class LeaveRequestController {
     return this.leaveRequestService.getAllLeaveRequest(page, size, sort, order);
   }
   @Post('/createLeaveRequest/:id')
-  async createLeaveRequest(@Query('id') id: string, @Body() body: any) {
+  async createLeaveRequest(@Param('id') id: string, @Body() body: any) {
     return this.leaveRequestService.createLeaveRequest({
       employeeId: id,
       ...body,
@@ -29,17 +29,17 @@ export class LeaveRequestController {
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
   @Get('/approveLeaveRequest/:id')
-  async approveLeaveRequest(@Query('id') id: string) {
+  async approveLeaveRequest(@Param('id') id: string) {
     return this.leaveRequestService.approveLeaveRequest(new Types.ObjectId(id));
   }
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
   @Get('/rejectLeaveRequest/:id')
-  async rejectLeaveRequest(@Query('id') id: string) {
+  async rejectLeaveRequest(@Param('id') id: string) {
     return this.leaveRequestService.rejectLeaveRequest(new Types.ObjectId(id));
   }
   @Get('/rejectLeaveRequest/:id')
-  async getAllMyLeaveRequest(@Query('id') id: string) {
+  async getAllMyLeaveRequest(@Param('id') id: string) {
     return this.leaveRequestService.getAllMyLeaveRequest(
       new Types.ObjectId(id),
     );
