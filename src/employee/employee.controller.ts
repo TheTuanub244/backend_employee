@@ -18,13 +18,16 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
   @Get('getAllEmployee')
+  @UseGuards(RolesGuard)
+  @Roles(Role.DEPARTMENT_MANAGER, Role.ADMIN)
   async getAllEmployee(
     @Query('page') page: number,
     @Query('size') size: number,
     @Query('sort') sort: string,
     @Query('order') order: string,
+    @Query('value') value: string,
   ) {
-    return this.employeeService.getAllEmployee(page, size, sort, order);
+    return this.employeeService.getAllEmployee(page, size, sort, order, value);
   }
   @UseGuards(RolesGuard)
   @Roles(Role.EMPLOYEE, Role.DEPARTMENT_MANAGER, Role.ADMIN)

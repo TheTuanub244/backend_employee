@@ -96,18 +96,44 @@ export class EmployeeService {
     size: number,
     field: string,
     order: string,
+    value: string,
   ) {
     const skip = (page - 1) * size;
-    const getAllEmployeeCount = await this.employeeSchema.countDocuments();
+    const types = ['userName', 'fullName', 'email', 'phoneNumber'];
     const sortOrder = order === 'ASC' ? 1 : -1;
+    if (!value) {
+      const skip = (page - 1) * size;
+      const getAllEmployeeCount = await this.employeeSchema.countDocuments();
+      const getAllEmployee = await this.employeeSchema
+        .find()
+        .select('-password')
+        .skip(skip)
+        .limit(size)
+        .sort({
+          [field]: sortOrder,
+        });
+      return {
+        data: getAllEmployee,
+        totalCount: getAllEmployeeCount,
+      };
+    }
+    const query = types.map((type) => ({
+      [type]: {
+        $regex: value,
+        $options: 'i',
+      },
+    }));
     const getAllEmployee = await this.employeeSchema
-      .find()
+      .find({
+        $or: query,
+      })
       .select('-password')
       .skip(skip)
       .limit(size)
       .sort({
         [field]: sortOrder,
       });
+    const getAllEmployeeCount = getAllEmployee.length;
     return {
       data: getAllEmployee,
       totalCount: getAllEmployeeCount,
