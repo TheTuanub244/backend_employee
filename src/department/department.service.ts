@@ -27,7 +27,6 @@ export class DepartmentService {
     const sortOrder = order === 'ASC' ? 1 : -1;
     const getAllDepartment = await this.departmentSchema
       .find()
-      .populate('manager')
       .skip(skip)
       .limit(size)
       .sort({
