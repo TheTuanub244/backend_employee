@@ -14,7 +14,36 @@ export class EmployeeService {
     private departmentService: DepartmentService,
   ) {}
   async getEmployeeById(id: Types.ObjectId) {
-    return this.employeeSchema.findById(id).select('-password');
+    const employee = await this.employeeSchema.aggregate([
+      {
+        $match: { _id: id },
+      },
+      {
+        $lookup: {
+          from: 'departments',
+          localField: 'department',
+          foreignField: '_id',
+          as: 'departmentDetails',
+        },
+      },
+      {
+        $unwind: '$departmentDetails',
+      },
+      {
+        $addFields: {
+          'department.name': '$departmentDetails.name',
+          departmentName: '$departmentDetails.name',
+        },
+      },
+      {
+        $project: {
+          departmentDetails: 0,
+          password: 0,
+        },
+      },
+    ]);
+
+    return employee[0];
   }
   async getBaseSalary(employeeId: Types.ObjectId): Promise<number> {
     const employee = await this.getEmployeeById(employeeId);
@@ -75,14 +104,41 @@ export class EmployeeService {
     };
   }
   async searchEmployee(value: string, type: string) {
-    return await this.employeeSchema
-      .find({
-        [type]: {
-          $regex: value,
-          $options: 'i',
+    const employees = await this.employeeSchema.aggregate([
+      {
+        $match: {
+          [type]: {
+            $regex: value,
+            $options: 'i',
+          },
         },
-      })
-      .select('-password');
+      },
+      {
+        $lookup: {
+          from: 'departments',
+          localField: 'department',
+          foreignField: '_id',
+          as: 'departmentDetails',
+        },
+      },
+      {
+        $unwind: '$departmentDetails',
+      },
+      {
+        $addFields: {
+          'department.name': '$departmentDetails.name',
+          departmentName: '$departmentDetails.name',
+        },
+      },
+      {
+        $project: {
+          departmentDetails: 0,
+          password: 0,
+        },
+      },
+    ]);
+
+    return employees;
   }
   async searchEmployeeByDOB(dob: Date) {
     return await this.employeeSchema
@@ -101,42 +157,67 @@ export class EmployeeService {
     const skip = (page - 1) * size;
     const types = ['userName', 'fullName', 'email', 'phoneNumber'];
     const sortOrder = order === 'ASC' ? 1 : -1;
-    if (!value) {
-      const skip = (page - 1) * size;
-      const getAllEmployeeCount = await this.employeeSchema.countDocuments();
-      const getAllEmployee = await this.employeeSchema
-        .find()
-        .select('-password')
-        .skip(skip)
-        .limit(size)
-        .sort({
-          [field]: sortOrder,
-        });
-      return {
-        data: getAllEmployee,
-        totalCount: getAllEmployeeCount,
-      };
-    }
-    const query = types.map((type) => ({
-      [type]: {
-        $regex: value,
-        $options: 'i',
+    size = Number(size);
+    const matchStage: any = value
+      ? {
+          $match: {
+            $or: types.map((type) => ({
+              [type]: {
+                $regex: value,
+                $options: 'i',
+              },
+            })),
+          },
+        }
+      : {};
+
+    const pipeline = [
+      matchStage,
+      {
+        $lookup: {
+          from: 'departments',
+          localField: 'department',
+          foreignField: '_id',
+          as: 'departmentDetails',
+        },
       },
-    }));
-    const getAllEmployee = await this.employeeSchema
-      .find({
-        $or: query,
-      })
-      .select('-password')
-      .skip(skip)
-      .limit(size)
-      .sort({
-        [field]: sortOrder,
-      });
-    const getAllEmployeeCount = getAllEmployee.length;
+      {
+        $unwind: '$departmentDetails',
+      },
+      {
+        $addFields: {
+          'department.name': '$departmentDetails.name',
+          departmentName: '$departmentDetails.name',
+        },
+      },
+      {
+        $project: {
+          departmentDetails: 0,
+          password: 0,
+        },
+      },
+      {
+        $sort: { [field]: sortOrder },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: size,
+      },
+    ];
+
+    if (Object.keys(matchStage).length === 0) {
+      pipeline.shift();
+    }
+
+    const employees = await this.employeeSchema.aggregate(pipeline);
+
+    const totalCount = employees.length;
+
     return {
-      data: getAllEmployee,
-      totalCount: getAllEmployeeCount,
+      data: employees,
+      totalCount,
     };
   }
   async getAllEmployeeByDepartment(
