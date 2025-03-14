@@ -31,16 +31,11 @@ export class DepartmentController {
   async getDepartmentById(@Param('id') id: string) {
     return this.departmentService.getDepartmentById(new Types.ObjectId(id));
   }
-  @Get('searchDepartmentByName')
-  async searchDepartmentByName(@Query('name') name: string) {
-    return this.departmentService.searchDepartmentByName(name);
+  @Post('searchDepartment')
+  async searchDepartmentByName(@Body('name') data: any) {
+    return this.departmentService.searchDepartment(data.value, data.type);
   }
-  @Get('getDepartmentByManager/:id')
-  async getDepartmentByManager(@Param('id') id: string) {
-    return this.departmentService.getDepartmentByManager(
-      new Types.ObjectId(id),
-    );
-  }
+
   @Delete('deleteDepartment/:id')
   async deleteDepartment(@Param('id') id: string) {
     return this.departmentService.deleteDepartment(new Types.ObjectId(id));
