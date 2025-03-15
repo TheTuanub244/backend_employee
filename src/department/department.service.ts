@@ -23,6 +23,7 @@ export class DepartmentService {
     field: string,
     order: string,
   ) {
+    size = Number(size);
     const skip = (page - 1) * size;
     const sortOrder = order === 'ASC' ? 1 : -1;
     const getAllDepartment = await this.departmentSchema.aggregate([

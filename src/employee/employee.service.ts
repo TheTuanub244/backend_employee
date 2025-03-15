@@ -227,6 +227,7 @@ export class EmployeeService {
     field: string,
     order: string,
   ) {
+    size = Number(size);
     const skip = (page - 1) * size;
     size = size * 1;
     const sortOrder = order === 'ASC' ? 1 : -1;
