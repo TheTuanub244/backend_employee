@@ -157,24 +157,16 @@ export class EmployeeService {
     value: string,
   ) {
     const skip = (page - 1) * size;
-    const types = ['userName', 'fullName', 'email', 'phoneNumber'];
+    const types = [
+      'userName',
+      'fullName',
+      'email',
+      'phoneNumber',
+      'departmentName',
+    ];
     const sortOrder = order === 'ASC' ? 1 : -1;
     size = Number(size);
-    const matchStage: any = value
-      ? {
-          $match: {
-            $or: types.map((type) => ({
-              [type]: {
-                $regex: value,
-                $options: 'i',
-              },
-            })),
-          },
-        }
-      : {};
-
     const pipeline: any[] = [
-      matchStage,
       {
         $lookup: {
           from: 'departments',
@@ -197,15 +189,6 @@ export class EmployeeService {
           departmentDetails: 0,
           password: 0,
         },
-      },
-      {
-        $sort: { [field]: sortOrder },
-      },
-      {
-        $skip: skip,
-      },
-      {
-        $limit: size,
       },
     ];
 
