@@ -5,11 +5,15 @@ import { Model, Types } from 'mongoose';
 import { ContractService } from 'src/contract/contract.service';
 import { DepartmentService } from 'src/department/department.service';
 import * as bcrypt from 'bcrypt';
+import { Role } from './enum/roles.enum';
+import { Department } from 'src/department/department.schema';
 @Injectable()
 export class EmployeeService {
   constructor(
     @InjectModel(Employee.name)
     private employeeSchema: Model<Employee>,
+    @InjectModel(Department.name)
+    private departmentSchema: Model<Department>,
     private contractService: ContractService,
     private departmentService: DepartmentService,
   ) {}
@@ -37,7 +41,6 @@ export class EmployeeService {
       },
       {
         $project: {
-          departmentDetails: 0,
           password: 0,
         },
       },
@@ -134,13 +137,14 @@ export class EmployeeService {
       },
       {
         $project: {
-          departmentDetails: 0,
           password: 0,
         },
       },
     ]);
 
-    return employees;
+    return {
+      data: employees,
+    };
   }
   async searchEmployeeByDOB(dob: Date) {
     return await this.employeeSchema
@@ -186,7 +190,6 @@ export class EmployeeService {
       },
       {
         $project: {
-          departmentDetails: 0,
           password: 0,
         },
       },
@@ -254,7 +257,31 @@ export class EmployeeService {
       { $limit: size },
     ]);
   }
+
   async updateEmployee(employeeId: Types.ObjectId, employeeDto: any) {
+    if (employeeDto.role === Role.DEPARTMENT_MANAGER) {
+      const findManager = await this.departmentSchema.findOne({
+        manager: employeeId,
+      });
+      if (!findManager) {
+        const editPreviousManager = await this.employeeSchema.findByIdAndUpdate(
+          findManager.manager,
+          {
+            role: Role.EMPLOYEE,
+          },
+        );
+        await editPreviousManager.save();
+        const editDepartment = await this.departmentSchema.findByIdAndUpdate(
+          findManager._id,
+          {
+            manager: employeeId,
+          },
+        );
+
+        await findManager.save();
+        await editDepartment.save();
+      }
+    }
     const updatedEmployee = await this.employeeSchema.findByIdAndUpdate(
       employeeId,
       employeeDto,
@@ -262,8 +289,18 @@ export class EmployeeService {
     const savedEmployee = await updatedEmployee.save();
     return savedEmployee;
   }
+
   async deleteEmployeeByAdminAndManager(employeeId: Types.ObjectId) {
-    await this.employeeSchema.findByIdAndDelete(employeeId);
+    const findManager = await this.departmentSchema.findOne({
+      manager: employeeId,
+    });
+    if (findManager) {
+      findManager.manager = null;
+      await findManager.save();
+    }
+    const deleteEmployee =
+      await this.employeeSchema.findByIdAndDelete(employeeId);
+    await deleteEmployee.save();
     return {
       message: 'Xóa nhân viên thành công',
     };

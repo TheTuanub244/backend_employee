@@ -3,6 +3,7 @@ import { DepartmentController } from './department.controller';
 import { DepartmentService } from './department.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Department, DepartmentSchema } from './department.schema';
+import { Employee, EmployeeSchema } from 'src/employee/employee.schema';
 
 @Module({
   controllers: [DepartmentController],
@@ -12,6 +13,10 @@ import { Department, DepartmentSchema } from './department.schema';
       {
         name: Department.name,
         schema: DepartmentSchema,
+      },
+      {
+        name: Employee.name,
+        schema: EmployeeSchema,
       },
     ]),
   ],

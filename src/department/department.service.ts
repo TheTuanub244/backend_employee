@@ -2,12 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Department } from './department.schema';
 import { Model, Types } from 'mongoose';
+import { Employee } from 'src/employee/employee.schema';
+import { Role } from 'src/employee/enum/roles.enum';
 
 @Injectable()
 export class DepartmentService {
   constructor(
     @InjectModel(Department.name)
     private departmentSchema: Model<Department>,
+    @InjectModel(Employee.name)
+    private employeeSchema: Model<Employee>,
   ) {}
   async createDepartment({ name, description, manager }) {
     const newDepartment = new this.departmentSchema({
@@ -26,6 +30,7 @@ export class DepartmentService {
   ) {
     size = Number(size);
     const skip = (page - 1) * size;
+    const types = ['name', 'managerName'];
     const sortOrder = order === 'ASC' ? 1 : -1;
 
     const pipeline: any[] = [
@@ -164,8 +169,28 @@ export class DepartmentService {
     return await this.departmentSchema.findByIdAndDelete(departmentId);
   }
   async updateManager(oldManager: Types.ObjectId, newManager: Types.ObjectId) {
-    return await this.departmentSchema.findByIdAndUpdate(oldManager, {
-      manager: newManager,
-    });
+    const updateDepartment = await this.departmentSchema.findOneAndUpdate(
+      {
+        manager: oldManager,
+      },
+      {
+        manager: newManager,
+      },
+    );
+    const updateOldManager = await this.employeeSchema.findByIdAndUpdate(
+      oldManager,
+      {
+        role: Role.EMPLOYEE,
+      },
+    );
+    await updateOldManager.save();
+    const updateNewManager = await this.employeeSchema.findByIdAndUpdate(
+      newManager,
+      {
+        role: Role.EMPLOYEE,
+      },
+    );
+    await updateNewManager.save();
+    return await updateDepartment.save();
   }
 }
