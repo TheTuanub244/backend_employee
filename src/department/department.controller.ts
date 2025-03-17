@@ -24,8 +24,15 @@ export class DepartmentController {
     @Query('size') size: number,
     @Query('sort') sort: string,
     @Query('order') order: string,
+    @Query('value') value: string,
   ) {
-    return this.departmentService.getAllDepartment(page, size, sort, order);
+    return this.departmentService.getAllDepartment(
+      page,
+      size,
+      sort,
+      order,
+      value,
+    );
   }
   @Get('getDepartmentById/:id')
   async getDepartmentById(@Param('id') id: string) {

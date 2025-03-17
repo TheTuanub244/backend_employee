@@ -81,6 +81,8 @@ export class EmployeeService {
       userName: employeeInfo.userName,
       password: hashedPassword,
       role: employeeInfo.role,
+      email: employeeInfo.email,
+      phoneNumber: employeeInfo.phoneNumber,
       position: employeeInfo.position,
       baseSalary: employeeInfo.baseSalary,
       bankAccount: employeeInfo.bankAccount,
@@ -171,7 +173,7 @@ export class EmployeeService {
         }
       : {};
 
-    const pipeline = [
+    const pipeline: any[] = [
       matchStage,
       {
         $lookup: {
@@ -207,9 +209,31 @@ export class EmployeeService {
       },
     ];
 
-    if (Object.keys(matchStage).length === 0) {
-      pipeline.shift();
+    if (value) {
+      pipeline.push({
+        $match: {
+          $or: types.map((type) => ({
+            [type]: {
+              $regex: value,
+              $options: 'i',
+            },
+          })),
+        },
+      });
     }
+    pipeline.push(
+      {
+        $sort: {
+          [field]: sortOrder,
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: size,
+      },
+    );
 
     const employees = await this.employeeSchema.aggregate(pipeline);
 

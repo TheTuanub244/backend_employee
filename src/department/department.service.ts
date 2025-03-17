@@ -22,11 +22,13 @@ export class DepartmentService {
     size: number,
     field: string,
     order: string,
+    value: string,
   ) {
     size = Number(size);
     const skip = (page - 1) * size;
     const sortOrder = order === 'ASC' ? 1 : -1;
-    const getAllDepartment = await this.departmentSchema.aggregate([
+
+    const pipeline: any[] = [
       {
         $lookup: {
           from: 'employees',
@@ -40,8 +42,8 @@ export class DepartmentService {
       },
       {
         $addFields: {
-          'manager.name': '$managerDetails.name',
-          managerName: '$managerDetails.name',
+          'manager.fullName': '$managerDetails.fullName',
+          managerName: '$managerDetails.fullName',
         },
       },
       {
@@ -60,8 +62,32 @@ export class DepartmentService {
       {
         $limit: size,
       },
-    ]);
-    const countAllDepartment = await this.departmentSchema.countDocuments();
+    ];
+    if (value) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { name: { $regex: value, $options: 'i' } },
+            { managerName: { $regex: value, $options: 'i' } },
+          ],
+        },
+      });
+    }
+    pipeline.push(
+      {
+        $sort: {
+          [field]: sortOrder,
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: size,
+      },
+    );
+    const getAllDepartment = await this.departmentSchema.aggregate(pipeline);
+    const countAllDepartment = getAllDepartment.length;
     return {
       totalCount: countAllDepartment,
       data: getAllDepartment,
@@ -85,8 +111,8 @@ export class DepartmentService {
       },
       {
         $addFields: {
-          'manager.name': '$managerDetails.name',
-          managerName: '$managerDetails.name',
+          'manager.fullName': '$managerDetails.fullName',
+          managerName: '$managerDetails.fullName',
         },
       },
       {
@@ -121,8 +147,8 @@ export class DepartmentService {
       },
       {
         $addFields: {
-          'manager.name': '$managerDetails.name',
-          managerName: '$managerDetails.name',
+          'manager.fullName': '$managerDetails.fullName',
+          managerName: '$managerDetails.fullName',
         },
       },
       {
