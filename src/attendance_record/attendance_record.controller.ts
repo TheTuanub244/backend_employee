@@ -1,6 +1,17 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AttendanceRecordService } from './attendance_record.service';
 import { Types } from 'mongoose';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Role } from 'src/employee/enum/roles.enum';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('attendance-record')
 export class AttendanceRecordController {
@@ -49,18 +60,34 @@ export class AttendanceRecordController {
   async getTotalWorkHoursByMonth(@Query() month: string) {
     return this.attendanceRecordService.getTotalWorkHoursByMonth(month);
   }
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
   @Get('getAllAttendanceRecord')
   async getAllAttendanceRecord(
     @Query('page') page: number,
     @Query('size') size: number,
     @Query('sort') sort: string,
     @Query('order') order: string,
+    @Query('value') value: string,
   ) {
     return this.attendanceRecordService.getAllAttendanceRecord(
       page,
       size,
       sort,
       order,
+      value,
+    );
+  }
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
+  @Get('searchAttendanceRecordByDate')
+  async searchAttendanceRecordByDate(
+    @Query('checkIn') checkIn: Date,
+    @Query('checkOut') checkOut: Date,
+  ) {
+    return this.attendanceRecordService.searchAttendanceRecordByDate(
+      checkIn,
+      checkOut,
     );
   }
 }

@@ -68,8 +68,10 @@ export class AttendanceRecordService {
     check_out_hour: Date,
     note: string,
   ) {
+    const startOfDay = new Date(check_out_hour.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(check_out_hour.setHours(23, 59, 59, 999));
     const findCheckIn = await this.attendanceRecordSchema.findOne({
-      employeeId,
+      $and: [{ checkIn: { $gte: startOfDay, $lte: endOfDay } }, employeeId],
     });
     if (!findCheckIn) {
       return {
@@ -144,24 +146,104 @@ export class AttendanceRecordService {
       },
     ]);
   }
+  async searchAttendanceRecordByDate(checkIn: Date, checkOut: Date) {
+    if (checkIn && !checkOut) {
+      checkIn = new Date(checkIn);
+      const startOfDay = new Date(checkIn.setHours(0, 0, 0, 0));
+      const endOfDay = new Date(checkIn.setHours(23, 59, 59, 999));
+      const findAttendanceRecord = await this.attendanceRecordSchema.find({
+        checkIn: { $gte: startOfDay, $lte: endOfDay },
+      });
+      return {
+        data: findAttendanceRecord,
+      };
+    } else if (!checkIn && checkOut) {
+      checkOut = new Date(checkOut);
+      const startOfDay = new Date(checkOut.setHours(0, 0, 0, 0));
+      const endOfDay = new Date(checkOut.setHours(23, 59, 59, 999));
+      const findAttendanceRecord = await this.attendanceRecordSchema.find({
+        checkOut: { $gte: startOfDay, $lte: endOfDay },
+      });
+      return {
+        data: findAttendanceRecord,
+      };
+    } else if (checkIn && checkOut) {
+      checkOut = new Date(checkOut);
+      checkIn = new Date(checkIn);
+
+      const startOfCheckOut = new Date(checkOut.setHours(0, 0, 0, 0));
+      const endOfCheckOut = new Date(checkOut.setHours(23, 59, 59, 999));
+      const startOfCheckIn = new Date(checkIn.setHours(0, 0, 0, 0));
+      const endOfCheckIn = new Date(checkIn.setHours(23, 59, 59, 999));
+      const findAttendanceRecord = await this.attendanceRecordSchema.find({
+        $and: [
+          { checkOut: { $gte: startOfCheckOut, $lte: endOfCheckOut } },
+          { checkIn: { $gte: startOfCheckIn, $lte: endOfCheckIn } },
+        ],
+      });
+      return {
+        data: findAttendanceRecord,
+      };
+    }
+  }
   async getAllAttendanceRecord(
     page: number,
     size: number,
     field: string,
     order: string,
+    value: string,
   ) {
     const skip = (page - 1) * size;
     const sortOrder = order === 'ASC' ? 1 : -1;
-    const getAllAttendanceRecord = await this.attendanceRecordSchema
-      .find()
-      .populate('employeeId')
-      .skip(skip)
-      .limit(size)
-      .sort({
-        [field]: sortOrder,
+    const types = ['employeeName', 'status'];
+    size = Number(size);
+    const pipeline: any[] = [
+      {
+        $lookup: {
+          from: 'employees',
+          localField: 'employeeId',
+          foreignField: '_id',
+          as: 'employeeDetails',
+        },
+      },
+      {
+        $unwind: '$employeeDetails',
+      },
+      {
+        $addFields: {
+          'employeeId.name': '$employeeDetails.name',
+          employeeName: '$employeeDetails.name',
+        },
+      },
+    ];
+    if (value) {
+      pipeline.push({
+        $match: {
+          $or: types.map((type) => ({
+            [type]: {
+              $regex: value,
+              $options: 'i',
+            },
+          })),
+        },
       });
-    const countGetAllAttendanceRecord =
-      await this.attendanceRecordSchema.countDocuments();
+    }
+    pipeline.push(
+      {
+        $sort: {
+          [field]: sortOrder,
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: size,
+      },
+    );
+    const getAllAttendanceRecord =
+      await this.attendanceRecordSchema.aggregate(pipeline);
+    const countGetAllAttendanceRecord = getAllAttendanceRecord.length;
     return {
       data: getAllAttendanceRecord,
       totalCount: countGetAllAttendanceRecord,
