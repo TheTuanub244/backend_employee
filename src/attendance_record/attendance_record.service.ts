@@ -68,10 +68,16 @@ export class AttendanceRecordService {
     check_out_hour: Date,
     note: string,
   ) {
-    const startOfDay = new Date(check_out_hour.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(check_out_hour.setHours(23, 59, 59, 999));
+    const startOfDay = new Date(check_out_hour).setHours(0, 0, 0, 0);
+    const endOfDay = new Date(check_out_hour).setHours(23, 59, 59, 999);
+
     const findCheckIn = await this.attendanceRecordSchema.findOne({
-      $and: [{ checkIn: { $gte: startOfDay, $lte: endOfDay } }, employeeId],
+      $and: [
+        { checkIn: { $gte: startOfDay, $lte: endOfDay } },
+        {
+          employeeId,
+        },
+      ],
     });
     if (!findCheckIn) {
       return {
