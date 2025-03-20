@@ -115,7 +115,7 @@ export class DepartmentService {
         },
       },
       {
-        $unwind: '$managerDetails',
+        $unwind: { path: '$managerDetails', preserveNullAndEmptyArrays: true },
       },
       {
         $addFields: {

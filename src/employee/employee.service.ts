@@ -31,7 +31,10 @@ export class EmployeeService {
         },
       },
       {
-        $unwind: '$departmentDetails',
+        $unwind: {
+          path: '$departmentDetails',
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $addFields: {
