@@ -93,7 +93,7 @@ export class TaskService {
       },
     );
     const getAllTask = await this.taskSchema.aggregate(pipeline);
-    const countGetAllAttendanceRecord = getAllTask.length;
+    const countGetAllAttendanceRecord = await this.taskSchema.countDocuments();
     return {
       data: getAllTask,
       totalCount: countGetAllAttendanceRecord,

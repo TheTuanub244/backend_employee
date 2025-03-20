@@ -229,7 +229,7 @@ export class EmployeeService {
 
     const employees = await this.employeeSchema.aggregate(pipeline);
 
-    const totalCount = employees.length;
+    const totalCount = await this.employeeSchema.countDocuments();
 
     return {
       data: employees,

@@ -250,7 +250,7 @@ export class AttendanceRecordService {
     );
     const getAllAttendanceRecord =
       await this.attendanceRecordSchema.aggregate(pipeline);
-    const countGetAllAttendanceRecord = getAllAttendanceRecord.length;
+    const countGetAllAttendanceRecord = await this.attendanceRecordSchema.countDocuments();
     return {
       data: getAllAttendanceRecord,
       totalCount: countGetAllAttendanceRecord,
