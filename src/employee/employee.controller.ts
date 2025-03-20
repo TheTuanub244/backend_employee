@@ -18,8 +18,8 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
   @Get('getAllEmployee')
-  @UseGuards(RolesGuard)
-  @Roles(Role.DEPARTMENT_MANAGER, Role.ADMIN)
+  // @UseGuards(RolesGuard)
+  // @Roles(Role.DEPARTMENT_MANAGER, Role.ADMIN)
   async getAllEmployee(
     @Query('page') page: number,
     @Query('size') size: number,
@@ -29,8 +29,8 @@ export class EmployeeController {
   ) {
     return this.employeeService.getAllEmployee(page, size, sort, order, value);
   }
-  @UseGuards(RolesGuard)
-  @Roles(Role.EMPLOYEE, Role.DEPARTMENT_MANAGER, Role.ADMIN)
+  // @UseGuards(RolesGuard)
+  // @Roles(Role.EMPLOYEE, Role.DEPARTMENT_MANAGER, Role.ADMIN)
   @Post('updateEmployee/:id')
   async updateEmployee(@Param('id') id: string, @Body() data: any) {
     return this.employeeService.updateEmployee(new Types.ObjectId(id), data);

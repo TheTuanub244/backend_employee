@@ -213,7 +213,8 @@ export class AttendanceRecordService {
         },
       },
       {
-        $unwind: '$employeeDetails',
+        preserveNullAndEmptyArrays: true,
+        $unwind: { path: '$employeeDetails' },
       },
       {
         $addFields: {

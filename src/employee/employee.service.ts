@@ -180,7 +180,10 @@ export class EmployeeService {
         },
       },
       {
-        $unwind: '$departmentDetails',
+        $unwind: {
+          path: '$departmentDetails',
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $addFields: {
@@ -194,7 +197,7 @@ export class EmployeeService {
         },
       },
     ];
-
+    console.log(value);
     if (value) {
       pipeline.push({
         $match: {
