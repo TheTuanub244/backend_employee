@@ -68,7 +68,7 @@ export class EmployeeService {
       userName: employeeDto.userName,
       password: hashedPassword,
       role: employeeDto.role,
-      department: employeeDto.department,
+      department: new Types.ObjectId(employeeDto.department),
       position: employeeDto.position,
       baseSalary: employeeDto.baseSalary,
       bankAccount: employeeDto.bankAccount,
@@ -185,7 +185,6 @@ export class EmployeeService {
       {
         $unwind: {
           path: '$departmentDetails',
-          preserveNullAndEmptyArrays: true,
         },
       },
       {
@@ -200,7 +199,6 @@ export class EmployeeService {
         },
       },
     ];
-    console.log(value);
     if (value) {
       pipeline.push({
         $match: {
@@ -212,29 +210,62 @@ export class EmployeeService {
           })),
         },
       });
-    }
-    pipeline.push(
-      {
-        $sort: {
-          [field]: sortOrder,
+      pipeline.push(
+        {
+          $sort: {
+            [field]: sortOrder,
+          },
         },
-      },
-      {
-        $skip: skip,
-      },
-      {
-        $limit: size,
-      },
-    );
+        {
+          $skip: skip,
+        },
+        {
+          $limit: size,
+        },
+      );
+      const employees = await this.employeeSchema.aggregate(pipeline);
+      const totalCount = employees.length;
+      return {
+        data: employees,
+        totalCount,
+      };
+    } else {
+      const employees = await this.employeeSchema.aggregate([
+        {
+          $lookup: {
+            from: 'departments',
+            localField: 'department',
+            foreignField: '_id',
+            as: 'departmentDetails',
+          },
+        },
+        {
+          $unwind: {
+            path: '$departmentDetails',
+          },
+        },
+        {
+          $addFields: {
+            'department.name': '$departmentDetails.name',
+            departmentName: '$departmentDetails.name',
+          },
+        },
+        {
+          $project: {
+            password: 0,
+          },
+        },
 
-    const employees = await this.employeeSchema.aggregate(pipeline);
+      ]);
+      const totalCount = employees.length;
 
-    const totalCount = await this.employeeSchema.countDocuments();
+      return {
+        data: employees,
+        totalCount,
+      };
+    }
 
-    return {
-      data: employees,
-      totalCount,
-    };
+    
   }
   async getAllEmployeeByDepartment(
     deparment: string,
@@ -288,6 +319,7 @@ export class EmployeeService {
         await editDepartment.save();
       }
     }
+    employeeDto.deparment = new Types.ObjectId(employeeDto.deparmen)
     const updatedEmployee = await this.employeeSchema.findByIdAndUpdate(
       employeeId,
       employeeDto,

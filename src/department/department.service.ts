@@ -95,7 +95,7 @@ export class DepartmentService {
       },
     );
     const getAllDepartment = await this.departmentSchema.aggregate(pipeline);
-    const countAllDepartment =  await this.departmentSchema.countDocuments();
+    const countAllDepartment =  getAllDepartment.length;
     return {
       totalCount: countAllDepartment,
       data: getAllDepartment,
