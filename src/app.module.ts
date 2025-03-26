@@ -23,6 +23,7 @@ import { ProjectModule } from './project/project.module';
 import { TaskModule } from './task/task.module';
 import { PersonalPropertyModule } from './personal_property/personal_property.module';
 import { MealOrderingModule } from './meal_ordering/meal_ordering.module';
+import { MealMenuModule } from './meal_menu/meal_menu.module';
 
 dotenv.config();
 @Module({
@@ -46,7 +47,8 @@ dotenv.config();
     ProjectModule,
     TaskModule,
     PersonalPropertyModule,
-    MealOrderingModule
+    MealOrderingModule,
+    MealMenuModule
   ],
   controllers: [AppController, EmployeeController],
   providers: [AppService],

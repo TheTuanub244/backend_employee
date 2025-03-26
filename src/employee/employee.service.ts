@@ -34,7 +34,6 @@ export class EmployeeService {
       {
         $unwind: {
           path: '$departmentDetails',
-          preserveNullAndEmptyArrays: true,
         },
       },
       {
@@ -191,12 +190,13 @@ export class EmployeeService {
       {
         $addFields: {
           'department.name': '$departmentDetails.name',
-          departmentName: '$departmentDetails.name',
+          'department._id': '$departmentDetails._id',
         },
       },
       {
         $project: {
           password: 0,
+          departmentDetails: 0
         },
       },
     ];
@@ -248,12 +248,13 @@ export class EmployeeService {
         {
           $addFields: {
             'department.name': '$departmentDetails.name',
-            departmentName: '$departmentDetails.name',
+            'department._id': '$departmentDetails._id',
           },
         },
         {
           $project: {
             password: 0,
+            departmentDetails: 0
           },
         },
         {

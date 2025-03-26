@@ -2,19 +2,20 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { MealOrderingService } from './meal_ordering.service';
 import { CreateMealOrderingDto } from './dto/create-meal_ordering.dto';
 import { UpdateMealOrderingDto } from './dto/update-meal_ordering.dto';
+import { Types } from 'mongoose';
 
 @Controller('meal-ordering')
 export class MealOrderingController {
   constructor(private readonly mealOrderingService: MealOrderingService) {}
 
-  @Post()
-  create(@Body() createMealOrderingDto: CreateMealOrderingDto) {
-    return this.mealOrderingService.create(createMealOrderingDto);
+  @Post('orderMeal')
+  orderMeal(@Body() createMealOrderingDto: any) {
+    return this.mealOrderingService.orderMeal(createMealOrderingDto);
   }
 
-  @Get()
-  findAll() {
-    return this.mealOrderingService.findAll();
+  @Get('getMyOrder/:id')
+  getMyOrder(@Param('id') id: string) {
+    return this.mealOrderingService.getMyOrder(new Types.ObjectId(id));
   }
 
   @Get(':id')
