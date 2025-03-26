@@ -47,33 +47,6 @@ export class Employee {
   role: Role;
   @Prop({ require: true, default: 1500000 })
   baseSalary: number;
-  @Prop({
-    type: {
-      bankName: String,
-      accountNumber: String,
-    },
-    _id: false,
-  })
-  bankAccount: {
-    bankName: string;
-    accountNumber: string;
-  };
-  @Prop({
-    type: {
-      socialInsuranceRate: Number,
-      healthInsuranceRate: Number,
-      unemploymentInsuranceRate: Number,
-    },
-    _id: false,
-  })
-  insurance: {
-    socialInsuranceRate: number;
-    healthInsuranceRate: number;
-    unemploymentInsuranceRate: number;
-  };
-
-  @Prop()
-  taxCode: string;
 }
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);
 

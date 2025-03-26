@@ -7,6 +7,7 @@ import { DepartmentService } from 'src/department/department.service';
 import * as bcrypt from 'bcrypt';
 import { Role } from './enum/roles.enum';
 import { Department } from 'src/department/department.schema';
+import mongoose from 'mongoose';
 @Injectable()
 export class EmployeeService {
   constructor(
@@ -68,7 +69,7 @@ export class EmployeeService {
       userName: employeeDto.userName,
       password: hashedPassword,
       role: employeeDto.role,
-      department: new Types.ObjectId(employeeDto.department),
+      department: new mongoose.Types.ObjectId(employeeDto.department),
       position: employeeDto.position,
       baseSalary: employeeDto.baseSalary,
       bankAccount: employeeDto.bankAccount,
@@ -83,7 +84,7 @@ export class EmployeeService {
     const newEmployee = new this.employeeSchema({
       fullName: employeeInfo.fullName,
       dob: employeeInfo.dob,
-      department: new Types.ObjectId(employeeInfo.department),
+      department: new mongoose.Types.ObjectId(employeeInfo.department),
       userName: employeeInfo.userName,
       password: hashedPassword,
       role: employeeInfo.role,
@@ -255,7 +256,17 @@ export class EmployeeService {
             password: 0,
           },
         },
-
+        {
+          $sort: {
+            [field]: sortOrder,
+          },
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: size,
+        },
       ]);
       const totalCount = employees.length;
 
@@ -264,8 +275,6 @@ export class EmployeeService {
         totalCount,
       };
     }
-
-    
   }
   async getAllEmployeeByDepartment(
     deparment: string,
@@ -319,7 +328,9 @@ export class EmployeeService {
         await editDepartment.save();
       }
     }
-    employeeDto.deparment = new Types.ObjectId(employeeDto.deparmen)
+    employeeDto.department = new mongoose.Types.ObjectId(
+      employeeDto.department,
+    );
     const updatedEmployee = await this.employeeSchema.findByIdAndUpdate(
       employeeId,
       employeeDto,
