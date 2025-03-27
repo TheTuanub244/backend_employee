@@ -39,12 +39,14 @@ export class EmployeeService {
       {
         $addFields: {
           'department.name': '$departmentDetails.name',
-          departmentName: '$departmentDetails.name',
+          'department._id': '$departmentDetails._id',
+          'department.manager': '$departmentDetails.manager',
         },
       },
       {
         $project: {
           password: 0,
+          departmentDetails: 0,
         },
       },
     ]);
@@ -191,12 +193,13 @@ export class EmployeeService {
         $addFields: {
           'department.name': '$departmentDetails.name',
           'department._id': '$departmentDetails._id',
+          'department.manager': '$departmentDetails.manager',
         },
       },
       {
         $project: {
           password: 0,
-          departmentDetails: 0
+          departmentDetails: 0,
         },
       },
     ];
@@ -211,6 +214,9 @@ export class EmployeeService {
           })),
         },
       });
+      const countEmployees = await this.employeeSchema.aggregate(pipeline);
+      const totalCount = countEmployees.length;
+
       pipeline.push(
         {
           $sort: {
@@ -225,38 +231,14 @@ export class EmployeeService {
         },
       );
       const employees = await this.employeeSchema.aggregate(pipeline);
-      const totalCount = employees.length;
       return {
         data: employees,
         totalCount,
       };
     } else {
-      const employees = await this.employeeSchema.aggregate([
-        {
-          $lookup: {
-            from: 'departments',
-            localField: 'department',
-            foreignField: '_id',
-            as: 'departmentDetails',
-          },
-        },
-        {
-          $unwind: {
-            path: '$departmentDetails',
-          },
-        },
-        {
-          $addFields: {
-            'department.name': '$departmentDetails.name',
-            'department._id': '$departmentDetails._id',
-          },
-        },
-        {
-          $project: {
-            password: 0,
-            departmentDetails: 0
-          },
-        },
+      const countEmployees = await this.employeeSchema.aggregate(pipeline);
+      const totalCount = countEmployees.length;
+      pipeline.push(
         {
           $sort: {
             [field]: sortOrder,
@@ -268,9 +250,8 @@ export class EmployeeService {
         {
           $limit: size,
         },
-      ]);
-      const totalCount = employees.length;
-
+      );
+      const employees = await this.employeeSchema.aggregate(pipeline);
       return {
         data: employees,
         totalCount,
@@ -348,9 +329,7 @@ export class EmployeeService {
       findManager.manager = null;
       await findManager.save();
     }
-    const deleteEmployee =
-      await this.employeeSchema.findByIdAndDelete(employeeId);
-    await deleteEmployee.save();
+    await this.employeeSchema.findByIdAndDelete(employeeId);
     return {
       message: 'Xóa nhân viên thành công',
     };

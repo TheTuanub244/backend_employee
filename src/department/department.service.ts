@@ -30,7 +30,6 @@ export class DepartmentService {
   ) {
     size = Number(size);
     const skip = (page - 1) * size;
-    const types = ['name', 'managerName'];
     const sortOrder = order === 'ASC' ? 1 : -1;
 
     const pipeline: any[] = [
@@ -51,7 +50,7 @@ export class DepartmentService {
       {
         $addFields: {
           'manager.fullName': '$managerDetails.fullName',
-          managerName: '$managerDetails.fullName',
+          'manager._id': '$managerDetails._id',
         },
       },
       {
