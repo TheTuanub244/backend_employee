@@ -79,6 +79,7 @@ export class MealOrderingService {
         date: dateString,
         menu: menuForDay
           ? {
+              _id: menuForDay._id
               items: menuForDay.items,
               price: menuForDay.price,
             }
