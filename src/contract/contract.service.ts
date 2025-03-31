@@ -37,7 +37,7 @@ export class ContractService {
           'employeeId.fullName': '$employeeDetails.fullName',
           'employeeId._id': '$employeeDetails._id',
           'employeeId.phoneNumber': '$employeeDetails.phoneNumber',
-          'employeeId.email': 'employeeDetails.email'
+          'employeeId.email': '$employeeDetails.email'
         },
       },
       {
