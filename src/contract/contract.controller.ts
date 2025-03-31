@@ -19,8 +19,10 @@ export class ContractController {
     @Query('size') size: number,
     @Query('sort') sort: string,
     @Query('order') order: string,
+    @Query('value') value: string,
+
   ) {
-    return this.contractService.getAllContract(page, size, sort, order);
+    return this.contractService.getAllContract(page, size, sort, order, value);
   }
   @Get('getContractById/:id')
   async getContractById(@Param('id') id: string) {

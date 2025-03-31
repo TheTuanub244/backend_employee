@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { Role } from './enum/roles.enum';
 import { Department } from 'src/department/department.schema';
 import mongoose from 'mongoose';
+import { Contract } from 'src/contract/contract.schema';
 @Injectable()
 export class EmployeeService {
   constructor(
@@ -17,6 +18,8 @@ export class EmployeeService {
     private departmentSchema: Model<Department>,
     private contractService: ContractService,
     private departmentService: DepartmentService,
+    @InjectModel(Contract.name)
+    private contractSchema: Model<Contract>,
   ) {}
   async getEmployeeById(id: Types.ObjectId) {
     const employee = await this.employeeSchema.aggregate([
@@ -324,6 +327,10 @@ export class EmployeeService {
   async deleteEmployeeByAdminAndManager(employeeId: Types.ObjectId) {
     const findManager = await this.departmentSchema.findOne({
       manager: employeeId,
+    });
+    const findAndDeleteContract = await this.contractSchema.find(employeeId);
+    findAndDeleteContract.map(async (contract) => {
+      await this.contractSchema.findByIdAndDelete(contract._id);
     });
     if (findManager) {
       findManager.manager = null;

@@ -33,15 +33,15 @@ export class MealOrderingService {
 
   async getMyOrder(employeeId: Types.ObjectId) {
     const today = new Date();
-    const currentDay = today.getDay(); 
+    const currentDay = today.getDay();
 
     const startDate = new Date(today);
     startDate.setDate(
       today.getDate() - currentDay + (currentDay === 0 ? 1 : 1),
-    ); 
+    );
 
     const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 4);
+    endDate.setDate(startDate.getDate() + 6);
     const weeklyMenus = await this.mealMenuSchema
       .find({
         date: { $gte: startDate, $lte: endDate },
@@ -54,11 +54,11 @@ export class MealOrderingService {
         employeeId,
         date: { $gte: startDate, $lte: endDate },
       })
-      .populate('menuId') 
+      .populate('menuId')
       .exec();
     const daysOfWeek = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu'];
     const result = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       const currentDate = new Date(startDate);
       currentDate.setDate(startDate.getDate() + i);
 
@@ -69,17 +69,18 @@ export class MealOrderingService {
         (menu) => menu.date.toISOString().split('T')[0] === dateString,
       );
 
-      // Tìm đơn đặt cho ngày hiện tại
       const orderForDay = orders.find(
         (order) => order.date.toISOString().split('T')[0] === dateString,
       );
+      console.log(orderForDay)
+      console.log(orderForDay)
 
       result.push({
         day: dayName,
         date: dateString,
         menu: menuForDay
           ? {
-              _id: menuForDay._id
+              _id: menuForDay._id,
               items: menuForDay.items,
               price: menuForDay.price,
             }
@@ -88,8 +89,7 @@ export class MealOrderingService {
           ? {
               quantity: orderForDay.quantity || 1,
               totalPrice:
-                (orderForDay.price || orderForDay.menuId.price) *
-                (orderForDay.quantity || 1),
+                orderForDay.menuId.price * (orderForDay.quantity || 1),
             }
           : null,
       });
