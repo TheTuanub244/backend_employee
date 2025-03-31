@@ -18,8 +18,8 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
   @Get('getAllEmployee')
-  // @UseGuards(RolesGuard)
-  // @Roles(Role.DEPARTMENT_MANAGER, Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @Roles( Role.ADMIN)
   async getAllEmployee(
     @Query('page') page: number,
     @Query('size') size: number,
@@ -29,15 +29,15 @@ export class EmployeeController {
   ) {
     return this.employeeService.getAllEmployee(page, size, sort, order, value);
   }
-  // @UseGuards(RolesGuard)
-  // @Roles(Role.EMPLOYEE, Role.DEPARTMENT_MANAGER, Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @Roles(Role.EMPLOYEE, Role.ADMIN)
   @Post('updateEmployee/:id')
   async updateEmployee(@Param('id') id: string, @Body() data: any) {
     return this.employeeService.updateEmployee(new Types.ObjectId(id), data);
   }
   @Get('getAllEmployeeByDepartment')
   @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
+  @Roles(Role.ADMIN)
   async getAllEmployeeByDepartment(
     @Query('department') department: string,
     @Query('page') page: number,
@@ -66,7 +66,7 @@ export class EmployeeController {
     return this.employeeService.getInsuranceRate(new Types.ObjectId(id));
   }
   @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
+  @Roles(Role.ADMIN)
   @Post('createEmployeeByAdmin')
   async createEmployeeByAdmin(@Body() data: any) {
     return this.employeeService.createEmployeeByAdmin(data);
@@ -84,7 +84,7 @@ export class EmployeeController {
     return this.employeeService.searchEmployeeByDOB(data.dob);
   }
     @UseGuards(RolesGuard)
-    @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
+    @Roles(Role.ADMIN)
   @Delete('deleteEmployeeByAdminAndManager/:id')
   async deleteEmployeeByAdminAndManager(@Param('id') id: string) {
     return this.employeeService.deleteEmployeeByAdminAndManager(

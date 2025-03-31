@@ -31,13 +31,13 @@ export class OvertimeRecordController {
     );
   }
   @UseGuards(RolesGuard)
-  @Roles(Role.DEPARTMENT_MANAGER, Role.ADMIN)
+  @Roles(Role.ADMIN)
   @Get('approveOTRecord/:id')
   async approveOTRecord(@Param('id') id: string) {
     return this.overtimeRecordService.approveOTRecord(new Types.ObjectId(id));
   }
   @UseGuards(RolesGuard)
-  @Roles(Role.DEPARTMENT_MANAGER, Role.ADMIN)
+  @Roles(Role.ADMIN)
   @Get('rejectOTRecord/:id')
   async rejectOTRecord(@Param('id') id: string) {
     return this.overtimeRecordService.rejectOTRecord(new Types.ObjectId(id));

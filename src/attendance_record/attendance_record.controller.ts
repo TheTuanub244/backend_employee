@@ -60,8 +60,8 @@ export class AttendanceRecordController {
   async getTotalWorkHoursByMonth(@Query() month: string) {
     return this.attendanceRecordService.getTotalWorkHoursByMonth(month);
   }
-  // @UseGuards(RolesGuard)
-  // @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
   @Get('getAllAttendanceRecord')
   async getAllAttendanceRecord(
     @Query('page') page: number,
@@ -79,7 +79,7 @@ export class AttendanceRecordController {
     );
   }
   @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
+  @Roles(Role.ADMIN)
   @Get('searchAttendanceRecordByDate')
   async searchAttendanceRecordByDate(
     @Query('checkIn') checkIn: Date,

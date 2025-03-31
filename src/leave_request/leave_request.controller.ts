@@ -27,13 +27,13 @@ export class LeaveRequestController {
     });
   }
   @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
+  @Roles(Role.ADMIN)
   @Get('/approveLeaveRequest/:id')
   async approveLeaveRequest(@Param('id') id: string) {
     return this.leaveRequestService.approveLeaveRequest(new Types.ObjectId(id));
   }
   @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
+  @Roles(Role.ADMIN)
   @Get('/rejectLeaveRequest/:id')
   async rejectLeaveRequest(@Param('id') id: string) {
     return this.leaveRequestService.rejectLeaveRequest(new Types.ObjectId(id));

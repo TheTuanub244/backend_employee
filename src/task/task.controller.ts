@@ -20,7 +20,7 @@ import { Role } from 'src/employee/enum/roles.enum';
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
   @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN, Role.DEPARTMENT_MANAGER)
+  @Roles(Role.ADMIN)
   @Post('createTask')
   create(@Body() createTaskDto: CreateTaskDto) {
     return this.taskService.createTask(createTaskDto);

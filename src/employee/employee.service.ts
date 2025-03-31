@@ -290,11 +290,11 @@ export class EmployeeService {
   }
 
   async updateEmployee(employeeId: Types.ObjectId, employeeDto: any) {
-    if (employeeDto.role === Role.DEPARTMENT_MANAGER) {
+    if (employeeDto.role === Role.ADMIN) {
       const findManager = await this.departmentSchema.findOne({
         manager: employeeId,
       });
-      if (!findManager) {
+      if (findManager) {
         const editPreviousManager = await this.employeeSchema.findByIdAndUpdate(
           findManager.manager,
           {
