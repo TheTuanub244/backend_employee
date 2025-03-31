@@ -36,6 +36,8 @@ export class ContractService {
         $addFields: {
           'employeeId.fullName': '$employeeDetails.fullName',
           'employeeId._id': '$employeeDetails._id',
+          'employeeId.phoneNumber': '$employeeDetails.phoneNumber',
+          'employeeId.email': 'employeeDetails.email'
         },
       },
       {
@@ -123,6 +125,8 @@ export class ContractService {
         $addFields: {
           'employeeId.fullName': '$employeeDetails.fullName',
           'employeeId._id': '$employeeDetails._id',
+          'employeeId.phoneNumber': '$employeeDetails.phoneNumber',
+          'employeeId.email': 'employeeDetails.email'
         },
       },
       {
