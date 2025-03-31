@@ -34,8 +34,8 @@ export class ContractService {
       },
       {
         $addFields: {
-          'employee.fullName': '$employeeDetails.fullName',
-          'employee._id': '$employeeDetails._id',
+          'employeeId.fullName': '$employeeDetails.fullName',
+          'employeeId._id': '$employeeDetails._id',
         },
       },
       {
@@ -121,8 +121,8 @@ export class ContractService {
       },
       {
         $addFields: {
-          'employee.fullName': '$employeeDetails.fullName',
-          'employee._id': '$employeeDetails._id',
+          'employeeId.fullName': '$employeeDetails.fullName',
+          'employeeId._id': '$employeeDetails._id',
         },
       },
       {
@@ -132,6 +132,9 @@ export class ContractService {
         },
       },
     ]);
+    return {
+      data: contract,
+    };
   }
   async searchContractByType(type: string) {
     return await this.contractSchema.find({
