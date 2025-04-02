@@ -369,6 +369,9 @@ export class EmployeeService {
   }
 
   async updateEmployee(employeeId: Types.ObjectId, employeeDto: any) {
+    employeeDto.department = new mongoose.Types.ObjectId(
+      employeeDto.department,
+    );
     if (employeeDto.role === Role.ADMIN) {
       const findManager = await this.departmentSchema.findOne({
         manager: employeeId,
@@ -387,14 +390,18 @@ export class EmployeeService {
             manager: employeeId,
           },
         );
-
         await findManager.save();
         await editDepartment.save();
       }
+      const updateManager = await this.departmentSchema.findByIdAndUpdate(
+        employeeDto.department,
+        {
+          manager: employeeId,
+        },
+      );
+      await updateManager.save();
     }
-    employeeDto.department = new mongoose.Types.ObjectId(
-      employeeDto.department,
-    );
+
     const updatedEmployee = await this.employeeSchema.findByIdAndUpdate(
       employeeId,
       employeeDto,
