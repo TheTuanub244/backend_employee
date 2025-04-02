@@ -94,7 +94,7 @@ export class DepartmentService {
       },
     );
     const getAllDepartment = await this.departmentSchema.aggregate(pipeline);
-    const countAllDepartment =  getAllDepartment.length;
+    const countAllDepartment = getAllDepartment.length;
     return {
       totalCount: countAllDepartment,
       data: getAllDepartment,
@@ -193,6 +193,14 @@ export class DepartmentService {
       },
     );
     await updateNewManager.save();
+    return await updateDepartment.save();
+  }
+  async updateDepartment(updateDepartmentDto: any) {
+    const updateDepartment = await this.departmentSchema.findByIdAndUpdate(
+      new Types.ObjectId(updateDepartmentDto._id),
+      updateDepartmentDto,
+    );
+
     return await updateDepartment.save();
   }
 }

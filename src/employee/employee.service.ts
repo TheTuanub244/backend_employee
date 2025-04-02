@@ -65,6 +65,30 @@ export class EmployeeService {
     return employee.insurance;
   }
   async createEmployeeByAdmin(employeeDto: any) {
+    const checkUserName = await this.employeeSchema.findOne({
+      userName: employeeDto.userName,
+    });
+    const checkEmail = await this.employeeSchema.findOne({
+      email: employeeDto.email,
+    });
+    const checkPhoneNumber = await this.employeeSchema.findOne({
+      phoneNumber: employeeDto.phoneNumber,
+    });
+    if (checkUserName) {
+      return {
+        data: 'Tên đăng nhập đã tồn tại',
+      };
+    }
+    if (checkEmail) {
+      return {
+        data: 'Email đã tồn tại',
+      };
+    }
+    if (checkPhoneNumber) {
+      return {
+        data: 'Số điện thoại đã tồn tại',
+      };
+    }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(employeeDto.password, salt);
     const newEmployee = new this.employeeSchema({
@@ -255,6 +279,7 @@ export class EmployeeService {
         },
       );
       const employees = await this.employeeSchema.aggregate(pipeline);
+      console.log(employees);
       return {
         data: employees,
         totalCount,

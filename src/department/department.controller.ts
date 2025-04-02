@@ -54,4 +54,8 @@ export class DepartmentController {
       data.newManager,
     );
   }
+  @Put('updateDepartment')
+  async updateDepartment(@Body() data: any) {
+    return this.departmentService.updateDepartment(data);
+  }
 }
