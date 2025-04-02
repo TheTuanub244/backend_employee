@@ -36,21 +36,23 @@ export class EmployeeController {
     return this.employeeService.updateEmployee(new Types.ObjectId(id), data);
   }
   @Get('getAllEmployeeByDepartment')
-  @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
   async getAllEmployeeByDepartment(
     @Query('department') department: string,
+    @Query('value') value: string,
     @Query('page') page: number,
     @Query('size') size: number,
     @Query('sort') sort: string,
     @Query('order') order: string,
   ) {
     return this.employeeService.getAllEmployeeByDepartment(
-      department,
       page,
       size,
       sort,
       order,
+      value,
+      department,
     );
   }
   @Get('/getEmployeeById/:id')

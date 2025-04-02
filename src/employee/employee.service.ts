@@ -262,31 +262,110 @@ export class EmployeeService {
     }
   }
   async getAllEmployeeByDepartment(
-    deparment: string,
     page: number,
     size: number,
     field: string,
     order: string,
+    value: string,
+    deparmentId: string,
   ) {
     size = Number(size);
     const skip = (page - 1) * size;
     size = size * 1;
     const sortOrder = order === 'ASC' ? 1 : -1;
-    return await this.employeeSchema.aggregate([
+    const pipeline: any[] = [
+      {
+        $lookup: {
+          from: 'departments',
+          localField: 'department',
+          foreignField: '_id',
+          as: 'departmentDetails',
+        },
+      },
+      {
+        $unwind: {
+          path: '$departmentDetails',
+        },
+      },
+      {
+        $addFields: {
+          'department.name': '$departmentDetails.name',
+          'department._id': '$departmentDetails._id',
+          'department.manager': '$departmentDetails.manager',
+        },
+      },
       {
         $project: {
           password: 0,
+          departmentDetails: 0,
         },
       },
-      {
+    ];
+    if (value) {
+      pipeline.push({
         $match: {
-          'department.name': deparment,
+          $and: [
+            {
+              fullName: {
+                $regex: value,
+                $options: 'i',
+              },
+            },
+            {
+              'department._id': new Types.ObjectId(deparmentId),
+            },
+          ],
         },
-      },
-      { $sort: { [field]: sortOrder } },
-      { $skip: skip },
-      { $limit: size },
-    ]);
+      });
+      const countEmployees = await this.employeeSchema.aggregate(pipeline);
+      const totalCount = countEmployees.length;
+
+      pipeline.push(
+        {
+          $sort: {
+            [field]: sortOrder,
+          },
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: size,
+        },
+      );
+      const employees = await this.employeeSchema.aggregate(pipeline);
+      return {
+        data: employees,
+        totalCount,
+      };
+    } else {
+      pipeline.push({
+        $match: {
+          'department._id': new Types.ObjectId(deparmentId),
+        },
+      });
+      const countEmployees = await this.employeeSchema.aggregate(pipeline);
+      const totalCount = countEmployees.length;
+
+      pipeline.push(
+        {
+          $sort: {
+            [field]: sortOrder,
+          },
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: size,
+        },
+      );
+      const employees = await this.employeeSchema.aggregate(pipeline);
+      return {
+        data: employees,
+        totalCount,
+      };
+    }
   }
 
   async updateEmployee(employeeId: Types.ObjectId, employeeDto: any) {
