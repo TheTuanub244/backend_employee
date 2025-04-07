@@ -24,7 +24,6 @@ export class MealOrderingService {
     createMealOrderingDto.menuId = new Types.ObjectId(
       createMealOrderingDto.menuId,
     );
-
     createMealOrderingDto.price =
       Number(findMenu.price) * Number(createMealOrderingDto.quantity);
     const newMealOrder = new this.mealOrderingSchema(createMealOrderingDto);
@@ -48,7 +47,6 @@ export class MealOrderingService {
       })
       .lean()
       .exec();
-
     const orders = await this.mealOrderingSchema
       .find({
         employeeId,
@@ -56,7 +54,14 @@ export class MealOrderingService {
       })
       .populate('menuId')
       .exec();
-    const daysOfWeek = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu'];
+    const daysOfWeek = [
+      'Thứ Hai',
+      'Thứ Ba',
+      'Thứ Tư',
+      'Thứ Năm',
+      'Thứ Sáu',
+      'Thứ Bảy',
+    ];
     const result = [];
     for (let i = 0; i < 6; i++) {
       const currentDate = new Date(startDate);
@@ -72,9 +77,6 @@ export class MealOrderingService {
       const orderForDay = orders.find(
         (order) => order.date.toISOString().split('T')[0] === dateString,
       );
-      console.log(orderForDay)
-      console.log(orderForDay)
-
       result.push({
         day: dayName,
         date: dateString,

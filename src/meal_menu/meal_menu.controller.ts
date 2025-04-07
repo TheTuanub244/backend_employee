@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { MealMenuService } from './meal_menu.service';
 import { CreateMealMenuDto } from './dto/create-meal_menu.dto';
 import { UpdateMealMenuDto } from './dto/update-meal_menu.dto';
@@ -11,7 +11,10 @@ export class MealMenuController {
   createMenu(@Body() createMealMenuDto: any) {
     return this.mealMenuService.createMenu(createMealMenuDto);
   }
-
+  @Get('getAllOrderInOneDay')
+  getAllOrderInOneDay(@Query('date') date: Date){
+    return this.mealMenuService.getAllOrderInOneDay(date)
+  }
   @Get()
   findAll() {
     return this.mealMenuService.findAll();

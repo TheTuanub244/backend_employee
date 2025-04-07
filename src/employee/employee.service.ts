@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Employee } from './employee.schema';
 import { Model, Types } from 'mongoose';
@@ -65,8 +65,8 @@ export class EmployeeService {
     return employee.insurance;
   }
   async createEmployeeByAdmin(employeeDto: any) {
-    console.log(employeeDto.userName)
-    
+    console.log(employeeDto.userName);
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(employeeDto.password, salt);
     const newEmployee = new this.employeeSchema({
@@ -95,19 +95,13 @@ export class EmployeeService {
       phoneNumber: employeeInfo.phoneNumber,
     });
     if (checkUserName) {
-      return {
-        data: 'Tên đăng nhập đã tồn tại',
-      };
+      throw new ConflictException('Tên đăng nhập đã tồn tại');
     }
     if (checkEmail) {
-      return {
-        data: 'Email đã tồn tại',
-      };
+      throw new ConflictException('Email đã tồn tại');
     }
     if (checkPhoneNumber) {
-      return {
-        data: 'Số điện thoại đã tồn tại',
-      };
+      throw new ConflictException('Số điện thoại đã tồn tại');
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(employeeInfo.password, salt);

@@ -12,10 +12,32 @@ export class MealMenuService {
     private mealMenuSchema: Model<MealMenu>,
   ) {}
   async createMenu(createMealMenuDto: any) {
-    const newMenu = new this.mealMenuSchema(createMealMenuDto);
+    const dateObj = new Date(createMealMenuDto.date);
+    dateObj.setHours(23, 59, 59, 999);
+
+    const newMenu = new this.mealMenuSchema({
+      ...createMealMenuDto,
+      date: dateObj,
+    });
     return await newMenu.save();
   }
+  async getAllOrderInOneDay(date: Date) {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
 
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const countOrder = this.mealMenuSchema.countDocuments({
+      date: {
+        $gte: startOfDay,
+        $lte: endOfDay,
+      },
+    });
+    return {
+      data: countOrder,
+    };
+  }
   findAll() {
     return `This action returns all mealMenu`;
   }

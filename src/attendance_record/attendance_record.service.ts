@@ -218,19 +218,22 @@ export class AttendanceRecordService {
       {
         $addFields: {
           'employeeId.name': '$employeeDetails.name',
-          employeeName: '$employeeDetails.name',
+          'employeeId.department': '$employeeDetails.department',
         },
       },
     ];
     if (value) {
       pipeline.push({
         $match: {
-          $or: types.map((type) => ({
-            [type]: {
-              $regex: value,
-              $options: 'i',
+          $and: [
+            {
+              $or: [
+                {
+                  'employeeId.department': new Types.ObjectId(value),
+                },
+              ],
             },
-          })),
+          ],
         },
       });
     }
