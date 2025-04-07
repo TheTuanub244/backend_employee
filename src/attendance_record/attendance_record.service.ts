@@ -198,6 +198,7 @@ export class AttendanceRecordService {
     field: string,
     order: string,
     value: string,
+    status: string,
   ) {
     const skip = (page - 1) * size;
     const sortOrder = order === 'ASC' ? 1 : -1;
@@ -233,10 +234,16 @@ export class AttendanceRecordService {
                 },
               ],
             },
+            {
+              status,
+            },
           ],
         },
       });
     }
+    const firstAggregate =
+      await this.attendanceRecordSchema.aggregate(pipeline);
+    const countGetAllAttendanceRecord = firstAggregate.length;
     pipeline.push(
       {
         $sort: {
@@ -252,7 +259,89 @@ export class AttendanceRecordService {
     );
     const getAllAttendanceRecord =
       await this.attendanceRecordSchema.aggregate(pipeline);
-    const countGetAllAttendanceRecord = getAllAttendanceRecord.length;
+    return {
+      data: getAllAttendanceRecord,
+      totalCount: countGetAllAttendanceRecord,
+    };
+  }
+  async getAllAttendanceRecordInOneMonth(
+    page: number,
+    size: number,
+    field: string,
+    order: string,
+    value: string,
+    date: Date,
+  ) {
+    const skip = (page - 1) * size;
+    const sortOrder = order === 'ASC' ? 1 : -1;
+    size = Number(size);
+    date = new Date(date);
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    const startOfMonth = new Date(Date.UTC(year, month, 1));
+    startOfMonth.setUTCHours(0, 0, 0, 0);
+
+    const endOfMonth = new Date(Date.UTC(year, month + 1, 0));
+    endOfMonth.setUTCHours(23, 59, 59, 999);
+    const pipeline: any[] = [
+      {
+        $lookup: {
+          from: 'employees',
+          localField: 'employeeId',
+          foreignField: '_id',
+          as: 'employeeDetails',
+        },
+      },
+      {
+        $unwind: { path: '$employeeDetails' },
+      },
+      {
+        $addFields: {
+          'employeeId.name': '$employeeDetails.name',
+          'employeeId.department': '$employeeDetails.department',
+        },
+      },
+    ];
+    if (value) {
+      pipeline.push({
+        $match: {
+          $and: [
+            {
+              $or: [
+                {
+                  'employeeId.department': new Types.ObjectId(value),
+                },
+              ],
+            },
+            {
+              checkIn: {
+                $gte: startOfMonth,
+                $lte: endOfMonth,
+              },
+            },
+          ],
+        },
+      });
+    }
+    const firstAggregate =
+      await this.attendanceRecordSchema.aggregate(pipeline);
+    const countGetAllAttendanceRecord = firstAggregate.length;
+    pipeline.push(
+      {
+        $sort: {
+          [field]: sortOrder,
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: size,
+      },
+    );
+    const getAllAttendanceRecord =
+      await this.attendanceRecordSchema.aggregate(pipeline);
     return {
       data: getAllAttendanceRecord,
       totalCount: countGetAllAttendanceRecord,

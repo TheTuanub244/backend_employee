@@ -69,6 +69,7 @@ export class AttendanceRecordController {
     @Query('sort') sort: string,
     @Query('order') order: string,
     @Query('value') value: string,
+    @Query('status') status: string
   ) {
     return this.attendanceRecordService.getAllAttendanceRecord(
       page,
@@ -76,6 +77,7 @@ export class AttendanceRecordController {
       sort,
       order,
       value,
+      status
     );
   }
   @UseGuards(RolesGuard)
@@ -88,6 +90,24 @@ export class AttendanceRecordController {
     return this.attendanceRecordService.searchAttendanceRecordByDate(
       checkIn,
       checkOut,
+    );
+  }
+  @Get('getAllAttendanceRecordInOneMonth')
+  async getAllAttendanceRecordInOneMonth(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('sort') sort: string,
+    @Query('order') order: string,
+    @Query('value') value: string,
+    @Query('date') date: Date,
+  ) {
+    return this.attendanceRecordService.getAllAttendanceRecordInOneMonth(
+      page,
+      size,
+      sort,
+      order,
+      value,
+      date,
     );
   }
 }
