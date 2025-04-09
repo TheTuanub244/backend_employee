@@ -16,7 +16,11 @@ export class MealOrderingService {
   ) {}
   async orderMeal(createMealOrderingDto: any) {
     const date = new Date(createMealOrderingDto.date);
+    createMealOrderingDto.employeeId = new Types.ObjectId(
+      createMealOrderingDto.employeeId,
+    );
     const findMeal = await this.mealOrderingSchema.findOne({
+      employeeId: createMealOrderingDto.employeeId,
       date,
     });
     const findMenu = await this.mealMenuSchema.findById(
@@ -26,12 +30,9 @@ export class MealOrderingService {
       Number(findMenu.price) * Number(createMealOrderingDto.quantity);
     if (findMeal) {
       const updateMeal = await findMeal.updateOne(createMealOrderingDto);
-      return updateMeal
+      return updateMeal;
     }
 
-    createMealOrderingDto.employeeId = new Types.ObjectId(
-      createMealOrderingDto.employeeId,
-    );
     createMealOrderingDto.menuId = new Types.ObjectId(
       createMealOrderingDto.menuId,
     );
@@ -39,7 +40,71 @@ export class MealOrderingService {
     const newMealOrder = new this.mealOrderingSchema(createMealOrderingDto);
     return await newMealOrder.save();
   }
+  async getAllOrderInOneDay(date: Date) {
+    date = new Date(date);
+    const currentDay = date.getDay();
+    const startDate = new Date(date);
+    startDate.setDate(date.getDate() - currentDay + (currentDay === 0 ? 1 : 1));
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
 
+    const orders = await this.mealOrderingSchema
+      .find({
+        date: { $gte: startDate, $lte: endDate },
+      })
+      .populate('menuId')
+      .populate({
+        path: 'employeeId',
+        populate: {
+          path: 'department',
+        },
+      })
+      .exec();
+    const daysOfWeek = [
+      'Thứ Hai',
+      'Thứ Ba',
+      'Thứ Tư',
+      'Thứ Năm',
+      'Thứ Sáu',
+      'Thứ Bảy',
+    ];
+    const result = [];
+    for (let i = 0; i < 6; i++) {
+      const orderForDay = [];
+
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + i);
+
+      const dateString = currentDate.toISOString().split('T')[0];
+      const dayName = daysOfWeek[i];
+      let total = 0;
+
+      await Promise.all(
+        orders.map((order) => {
+          console.log(order);
+          if (order.date.toISOString().split('T')[0] === dateString) {
+            total += order.quantity;
+            orderForDay.push({
+              quantity: order.quantity,
+              fullName: order.employeeId.fullName,
+              department: order.employeeId.department.name,
+              email: order.employeeId.email,
+              phoneNumber: order.employeeId.phoneNumber,
+            });
+          }
+        }),
+      );
+      result.push({
+        day: dayName,
+        date: dateString,
+        order: {
+          total,
+          info: orderForDay,
+        },
+      });
+    }
+    return result;
+  }
   async getMyOrder(employeeId: Types.ObjectId) {
     const today = new Date();
     const currentDay = today.getDay();
@@ -48,7 +113,7 @@ export class MealOrderingService {
     startDate.setDate(
       today.getDate() - currentDay + (currentDay === 0 ? 1 : 1),
     );
-    console.log(startDate)
+    console.log(startDate);
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 6);
     const weeklyMenus = await this.mealMenuSchema
@@ -106,7 +171,7 @@ export class MealOrderingService {
           : null,
       });
     }
-    console.log(result)
+    console.log(result);
     return {
       weekRange: {
         start: startDate.toISOString().split('T')[0],

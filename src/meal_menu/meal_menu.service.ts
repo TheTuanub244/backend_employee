@@ -21,22 +21,7 @@ export class MealMenuService {
     });
     return await newMenu.save();
   }
-  async getAllOrderInOneDay(date: Date) {
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-    const countOrder = this.mealMenuSchema.find({
-      date: {
-        $gte: startOfDay,
-        $lte: endOfDay,
-      },
-    });
-    return {
-      data: (await countOrder).length,
-    };
-  }
+  
   findAll() {
     return `This action returns all mealMenu`;
   }

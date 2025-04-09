@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { MealOrderingService } from './meal_ordering.service';
 import { CreateMealOrderingDto } from './dto/create-meal_ordering.dto';
 import { UpdateMealOrderingDto } from './dto/update-meal_ordering.dto';
@@ -17,7 +17,10 @@ export class MealOrderingController {
   getMyOrder(@Param('id') id: string) {
     return this.mealOrderingService.getMyOrder(new Types.ObjectId(id));
   }
-
+  @Get('getAllOrderInOneDay')
+  getAllOrderInOneDay(@Query('date') date: Date){
+    return this.mealOrderingService.getAllOrderInOneDay(date)
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.mealOrderingService.findOne(+id);

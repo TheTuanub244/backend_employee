@@ -11,10 +11,7 @@ export class MealMenuController {
   createMenu(@Body() createMealMenuDto: any) {
     return this.mealMenuService.createMenu(createMealMenuDto);
   }
-  @Get('getAllOrderInOneDay')
-  getAllOrderInOneDay(@Query('date') date: Date){
-    return this.mealMenuService.getAllOrderInOneDay(date)
-  }
+  
   @Get()
   findAll() {
     return this.mealMenuService.findAll();
