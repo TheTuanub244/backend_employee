@@ -27,15 +27,14 @@ export class MealMenuService {
 
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
-
-    const countOrder = this.mealMenuSchema.countDocuments({
+    const countOrder = this.mealMenuSchema.find({
       date: {
         $gte: startOfDay,
         $lte: endOfDay,
       },
     });
     return {
-      data: countOrder,
+      data: (await countOrder).length,
     };
   }
   findAll() {
