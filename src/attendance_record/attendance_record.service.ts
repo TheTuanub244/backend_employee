@@ -63,6 +63,19 @@ export class AttendanceRecordService {
     const savedAttendanceRecord = await newAttendanceRecord.save();
     return savedAttendanceRecord;
   }
+  async findCheckIn(employeeId: string) {
+    const findCheckIn = await this.attendanceRecordSchema.findById(
+      new Types.ObjectId(employeeId),
+    );
+    if (findCheckIn) {
+      return {
+        data: true,
+      };
+    }
+    return {
+      data: false,
+    };
+  }
   async checkOut(
     employeeId: Types.ObjectId,
     check_out_hour: Date,

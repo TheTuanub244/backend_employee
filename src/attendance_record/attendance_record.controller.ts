@@ -69,7 +69,7 @@ export class AttendanceRecordController {
     @Query('sort') sort: string,
     @Query('order') order: string,
     @Query('value') value: string,
-    @Query('status') status: string
+    @Query('status') status: string,
   ) {
     return this.attendanceRecordService.getAllAttendanceRecord(
       page,
@@ -77,8 +77,12 @@ export class AttendanceRecordController {
       sort,
       order,
       value,
-      status
+      status,
     );
+  }
+  @Get('findCheckIn')
+  async findCheckIn(@Query('employeeId') employeeId: string) {
+    return this.attendanceRecordService.findCheckIn(employeeId);
   }
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)

@@ -15,17 +15,27 @@ export class MealOrderingService {
     private mealMenuSchema: Model<MealMenu>,
   ) {}
   async orderMeal(createMealOrderingDto: any) {
+    const date = new Date(createMealOrderingDto.date);
+    const findMeal = await this.mealOrderingSchema.findOne({
+      date,
+    });
     const findMenu = await this.mealMenuSchema.findById(
       new Types.ObjectId(createMealOrderingDto.menuId),
     );
+    createMealOrderingDto.price =
+      Number(findMenu.price) * Number(createMealOrderingDto.quantity);
+    if (findMeal) {
+      const updateMeal = await findMeal.updateOne(createMealOrderingDto);
+      return updateMeal
+    }
+
     createMealOrderingDto.employeeId = new Types.ObjectId(
       createMealOrderingDto.employeeId,
     );
     createMealOrderingDto.menuId = new Types.ObjectId(
       createMealOrderingDto.menuId,
     );
-    createMealOrderingDto.price =
-      Number(findMenu.price) * Number(createMealOrderingDto.quantity);
+
     const newMealOrder = new this.mealOrderingSchema(createMealOrderingDto);
     return await newMealOrder.save();
   }
@@ -38,7 +48,7 @@ export class MealOrderingService {
     startDate.setDate(
       today.getDate() - currentDay + (currentDay === 0 ? 1 : 1),
     );
-
+    console.log(startDate)
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 6);
     const weeklyMenus = await this.mealMenuSchema
@@ -96,7 +106,7 @@ export class MealOrderingService {
           : null,
       });
     }
-
+    console.log(result)
     return {
       weekRange: {
         start: startDate.toISOString().split('T')[0],
