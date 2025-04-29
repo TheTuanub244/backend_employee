@@ -10,6 +10,8 @@ export class LeaveRequestService {
     private leaveRequestSchema: Model<LeaveRequest>,
   ) {}
   calculateTotalDays(startDate: Date, endDate: Date): number {
+    startDate = new Date(startDate)
+    endDate = new Date(endDate)
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(0, 0, 0, 0);
     const diffInMilliseconds = endDate.getTime() - startDate.getTime();
