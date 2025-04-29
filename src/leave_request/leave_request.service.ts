@@ -61,18 +61,62 @@ export class LeaveRequestService {
   }
   async getAllLeaveRequest(
     page: number,
-    perPage: number,
+    size: number,
     field: string,
     order: string,
+    value: string,
+    status: string,
   ) {
-    const skip = (page - 1) * perPage;
+    const skip = (page - 1) * size;
     const sortOrder = order === 'ASC' ? 1 : -1;
-    return await this.leaveRequestSchema
-      .find()
-      .skip(skip)
-      .limit(perPage)
-      .sort({
-        [field]: sortOrder,
+    const types = ['employeeName', 'status'];
+    size = Number(size);
+    const pipeline: any[] = [
+      {
+        $lookup: {
+          from: 'employees',
+          localField: 'employeeId',
+          foreignField: '_id',
+          as: 'employeeDetails',
+        },
+      },
+      {
+        $unwind: { path: '$employeeDetails' },
+      },
+      {
+        $addFields: {
+          'employeeId.name': '$employeeDetails.name',
+          'employeeId.department': '$employeeDetails.department',
+        },
+      },
+    ];
+    if (value) {
+      pipeline.push({
+        $match: {
+          status,
+        },
       });
+    }
+    const firstAggregate = await this.leaveRequestSchema.aggregate(pipeline);
+    const countGetAllLeaveRequestRecord = firstAggregate.length;
+    pipeline.push(
+      {
+        $sort: {
+          [field]: sortOrder,
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: size,
+      },
+    );
+    const getAllLeaveRequestRecord =
+      await this.leaveRequestSchema.aggregate(pipeline);
+    return {
+      data: getAllLeaveRequestRecord,
+      totalCount: countGetAllLeaveRequestRecord,
+    };
   }
 }

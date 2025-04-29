@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { LeaveRequestService } from './leave_request.service';
 import { Types } from 'mongoose';
 import { RolesGuard } from 'src/common/guards/roles.guard';
@@ -16,8 +24,17 @@ export class LeaveRequestController {
     @Query('size') size: number,
     @Query('sort') sort: string,
     @Query('order') order: string,
+    @Query('value') value: string,
+    @Query('status') status: string,
   ) {
-    return this.leaveRequestService.getAllLeaveRequest(page, size, sort, order);
+    return this.leaveRequestService.getAllLeaveRequest(
+      page,
+      size,
+      sort,
+      order,
+      value,
+      status,
+    );
   }
   @Post('/createLeaveRequest/:id')
   async createLeaveRequest(@Param('id') id: string, @Body() body: any) {
