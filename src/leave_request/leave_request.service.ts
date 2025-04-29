@@ -86,11 +86,27 @@ export class LeaveRequestService {
         $unwind: { path: '$employeeDetails' },
       },
       {
-        $addFields: {
-          'employeeId.name': '$employeeDetails.name',
-          'employeeId.department': '$employeeDetails.department',
+        $lookup: {
+          from: 'departments',
+          localField: 'employeeDetails.department',
+          foreignField: '_id',
+          as: 'departmentDetails',
         },
       },
+      {
+        $unwind: { path: '$departmentDetails'},
+      },
+      {
+        $addFields: {
+          'employeeId.name': '$employeeDetails.fullName',
+          'employeeId.department': '$departmentDetails.name',
+        },
+      },
+      {
+        $project:{
+          'departmentDetails': 0
+        }
+      }
     ];
     if (value) {
       pipeline.push({
