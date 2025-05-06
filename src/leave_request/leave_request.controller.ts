@@ -25,7 +25,6 @@ export class LeaveRequestController {
     @Query('sort') sort: string,
     @Query('order') order: string,
     @Query('value') value: string,
-    @Query('status') status: string,
   ) {
     return this.leaveRequestService.getAllLeaveRequest(
       page,
@@ -33,7 +32,6 @@ export class LeaveRequestController {
       sort,
       order,
       value,
-      status,
     );
   }
   @Post('/createLeaveRequest/:id')

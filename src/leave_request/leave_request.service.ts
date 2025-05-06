@@ -10,8 +10,8 @@ export class LeaveRequestService {
     private leaveRequestSchema: Model<LeaveRequest>,
   ) {}
   calculateTotalDays(startDate: Date, endDate: Date): number {
-    startDate = new Date(startDate)
-    endDate = new Date(endDate)
+    startDate = new Date(startDate);
+    endDate = new Date(endDate);
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(0, 0, 0, 0);
     const diffInMilliseconds = endDate.getTime() - startDate.getTime();
@@ -67,11 +67,10 @@ export class LeaveRequestService {
     field: string,
     order: string,
     value: string,
-    status: string,
   ) {
     const skip = (page - 1) * size;
     const sortOrder = order === 'ASC' ? 1 : -1;
-    const types = ['employeeName', 'status'];
+    const types = ['status'];
     size = Number(size);
     const pipeline: any[] = [
       {
@@ -94,7 +93,7 @@ export class LeaveRequestService {
         },
       },
       {
-        $unwind: { path: '$departmentDetails'},
+        $unwind: { path: '$departmentDetails' },
       },
       {
         $addFields: {
@@ -103,38 +102,43 @@ export class LeaveRequestService {
         },
       },
       {
-        $project:{
-          'departmentDetails': 0
-        }
-      }
+        $project: {
+          departmentDetails: 0,
+        },
+      },
     ];
     if (value) {
       pipeline.push({
         $match: {
-          status,
+          $or: types.map((type) => ({
+            [type]: {
+              $regex: value,
+              $options: 'i',
+            },
+          })),
         },
       });
-    }
-    const firstAggregate = await this.leaveRequestSchema.aggregate(pipeline);
-    const countGetAllLeaveRequestRecord = firstAggregate.length;
-    pipeline.push(
-      {
-        $sort: {
-          [field]: sortOrder,
+      const firstAggregate = await this.leaveRequestSchema.aggregate(pipeline);
+      const countGetAllLeaveRequestRecord = firstAggregate.length;
+      pipeline.push(
+        {
+          $sort: {
+            [field]: sortOrder,
+          },
         },
-      },
-      {
-        $skip: skip,
-      },
-      {
-        $limit: size,
-      },
-    );
-    const getAllLeaveRequestRecord =
-      await this.leaveRequestSchema.aggregate(pipeline);
-    return {
-      data: getAllLeaveRequestRecord,
-      totalCount: countGetAllLeaveRequestRecord,
-    };
+        {
+          $skip: skip,
+        },
+        {
+          $limit: size,
+        },
+      );
+      const getAllLeaveRequestRecord =
+        await this.leaveRequestSchema.aggregate(pipeline);
+      return {
+        data: getAllLeaveRequestRecord,
+        totalCount: countGetAllLeaveRequestRecord,
+      };
+    }
   }
 }
