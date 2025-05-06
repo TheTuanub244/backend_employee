@@ -33,4 +33,24 @@ export class PropertyController {
   async returnProperty(@Param('id') id: string) {
     return await this.propertyService.returnProperty(id);
   }
+  @Get('/getAllPropertyByDepartmentAndStatus/:department/:status')
+  async getAllPropertyByDepartmentAndStatus(
+    @Param('department') department: string,
+    @Param('status') status: string,
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('sort') sort: string,
+    @Query('order') order: string,
+    @Query('value') value: string,
+  ) {
+    return await this.propertyService.getAllPropertyByDepartmentAndStatus(
+      page,
+      size,
+      sort,
+      order,
+      department,
+      status,
+      value,
+    );
+  }
 }

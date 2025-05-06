@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Property } from './property.schema';
-import { Model } from 'mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
 
 @Injectable()
 export class PropertyService {
@@ -134,10 +134,105 @@ export class PropertyService {
       department: departmentId,
     });
   }
-  async getAllPropertyByDepartmentAndStatus(departmentId, status) {
-    return await this.propertySchema.find({
-      department: departmentId,
-      status,
-    });
+  async getAllPropertyByDepartmentAndStatus(
+    page: number,
+    size: number,
+    field: string,
+    order: string,
+    departmentId: string,
+    status: string,
+    value: string,
+  ) {
+    const skip = (page - 1) * size;
+    const types = ['name'];
+    const sortOrder = order === 'ASC' ? 1 : -1;
+    size = Number(size);
+    const pipeline: any[] = [
+      {
+        $lookup: {
+          from: 'departments',
+          localField: 'department',
+          foreignField: '_id',
+          as: 'departmentDetails',
+        },
+      },
+      {
+        $unwind: {
+          path: '$departmentDetails',
+        },
+      },
+      {
+        $addFields: {
+          'department.name': '$departmentDetails.name',
+          'department._id': '$departmentDetails._id',
+          'department.manager': '$departmentDetails.manager',
+        },
+      },
+      {
+        $project: {
+          departmentDetails: 0,
+        },
+      },
+    ];
+    if (!departmentId && !status && !value) {
+      pipeline.push({
+        $match: {
+          $and: [
+            {
+              department: new Types.ObjectId(departmentId),
+              status: status,
+              $or: types.map((type) => ({
+                [type]: {
+                  $regex: value,
+                  $options: 'i',
+                },
+              })),
+            },
+          ],
+        },
+      });
+      const countProperties = await this.propertySchema.aggregate(pipeline);
+      const totalCount = countProperties.length;
+
+      pipeline.push(
+        {
+          $sort: {
+            [field]: sortOrder,
+          },
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: size,
+        },
+      );
+      const properties = await this.propertySchema.aggregate(pipeline);
+      return {
+        data: properties,
+        totalCount,
+      };
+    } else {
+      const countProperties = await this.propertySchema.aggregate(pipeline);
+      const totalCount = countProperties.length;
+      pipeline.push(
+        {
+          $sort: {
+            [field]: sortOrder,
+          },
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: size,
+        },
+      );
+      const properties = await this.propertySchema.aggregate(pipeline);
+      return {
+        data: properties,
+        totalCount,
+      };
+    }
   }
 }
