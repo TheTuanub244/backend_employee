@@ -175,18 +175,33 @@ export class PropertyService {
       },
     ];
     if (!departmentId && !status && !value) {
+      const countProperties = await this.propertySchema.aggregate(pipeline);
+      const totalCount = countProperties.length;
+      pipeline.push(
+        {
+          $sort: {
+            [field]: sortOrder,
+          },
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: size,
+        },
+      );
+      const properties = await this.propertySchema.aggregate(pipeline);
+      return {
+        data: properties,
+        totalCount,
+      };
+    } else if (departmentId && status && !value) {
       pipeline.push({
         $match: {
           $and: [
             {
-              department: new Types.ObjectId(departmentId),
+              'department._id': new Types.ObjectId(departmentId),
               status: status,
-              $or: types.map((type) => ({
-                [type]: {
-                  $regex: value,
-                  $options: 'i',
-                },
-              })),
             },
           ],
         },
@@ -213,8 +228,25 @@ export class PropertyService {
         totalCount,
       };
     } else {
+      pipeline.push({
+        $match: {
+          $and: [
+            {
+              'department._id': new Types.ObjectId(departmentId),
+              status: status,
+              $or: types.map((type) => ({
+                [type]: {
+                  $regex: value,
+                  $options: 'i',
+                },
+              })),
+            },
+          ],
+        },
+      });
       const countProperties = await this.propertySchema.aggregate(pipeline);
       const totalCount = countProperties.length;
+
       pipeline.push(
         {
           $sort: {
