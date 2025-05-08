@@ -25,6 +25,7 @@ import { PersonalPropertyModule } from './personal_property/personal_property.mo
 import { MealOrderingModule } from './meal_ordering/meal_ordering.module';
 import { MealMenuModule } from './meal_menu/meal_menu.module';
 import { PropertyModule } from './property/property.module';
+import { MeetingModule } from './meeting/meeting.module';
 
 dotenv.config();
 @Module({
@@ -50,7 +51,8 @@ dotenv.config();
     PersonalPropertyModule,
     MealOrderingModule,
     MealMenuModule,
-    PropertyModule
+    PropertyModule,
+    MeetingModule
   ],
   controllers: [AppController, EmployeeController],
   providers: [AppService],
