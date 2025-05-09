@@ -10,10 +10,10 @@ export class MeetingService {
     private meetingSchema: Model<Meeting>,
   ) {}
   async createMeeting(meeting: any): Promise<Meeting> {
-    const { departmentId } = meeting;
+    const { department } = meeting;
     const newMeeting = new this.meetingSchema({
       ...meeting,
-      deparmtnet: new Types.ObjectId(departmentId),
+      department: new Types.ObjectId(department),
     });
     return await newMeeting.save();
   }
