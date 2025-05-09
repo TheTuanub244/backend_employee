@@ -10,7 +10,11 @@ export class MeetingService {
     private meetingSchema: Model<Meeting>,
   ) {}
   async createMeeting(meeting: any): Promise<Meeting> {
-    const newMeeting = new this.meetingSchema(meeting);
+    const { departmentId } = meeting;
+    const newMeeting = new this.meetingSchema({
+      ...meeting,
+      deparmtnet: new Types.ObjectId(departmentId),
+    });
     return await newMeeting.save();
   }
   async getAllMeetingByDepartmentAndStatus(
@@ -52,6 +56,7 @@ export class MeetingService {
       },
     ];
     if (!departmentId && !status) {
+      console.log(departmentId, status);
       const countMeetings = await this.meetingSchema.aggregate(pipeline);
       const totalCount = countMeetings.length;
       pipeline.push(
