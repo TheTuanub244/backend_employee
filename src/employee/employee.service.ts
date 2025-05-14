@@ -422,10 +422,17 @@ export class EmployeeService {
       );
       await updateManager.save();
     }
-
+    if (employeeDto.password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(employeeDto.password, salt);
+      employeeDto.password = hashedPassword;
+    }
     const updatedEmployee = await this.employeeSchema.findByIdAndUpdate(
       employeeId,
       employeeDto,
+      {
+        new: true,
+      }
     );
     const savedEmployee = await updatedEmployee.save();
     return savedEmployee;
