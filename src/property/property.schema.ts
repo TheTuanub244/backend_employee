@@ -6,6 +6,7 @@ import { Employee } from 'src/employee/employee.schema';
 export enum PropertyStatus {
   ACTIVE = 'ACTIVE',
   MAINTAINING = 'MAINTAINING',
+  PENDING = 'PENDING',
 }
 @Schema({ timestamps: true })
 export class Property {

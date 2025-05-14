@@ -115,6 +115,15 @@ export class PropertyService {
     const updateProperty = await this.propertySchema.findByIdAndUpdate(
       propertyId,
       {
+        status: 'PENDING',
+      },
+    );
+    return await updateProperty.save();
+  }
+  async acceptMaintaince(propertyId) {
+    const updateProperty = await this.propertySchema.findByIdAndUpdate(
+      propertyId,
+      {
         status: 'MAINTAINING',
       },
     );

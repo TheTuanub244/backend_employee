@@ -8,4 +8,8 @@ export class AuthController {
   async login(@Body() data: any) {
     return this.authService.login(data);
   }
+  @Post('changePassword')
+  async changePassword(@Body() data: any) {
+    return this.authService.changePassword(data);
+  }
 }

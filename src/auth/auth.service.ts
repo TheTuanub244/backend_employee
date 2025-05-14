@@ -41,7 +41,20 @@ export class AuthService {
       user: isValidUser,
     };
   }
-  async changePassword(userName: string, newPassword: string) {
+  async changePassword({ userName, oldPassword, newPassword }) {
+    const isValidUser = await this.employeeSchema.findOne({
+      userName,
+    });
+    if (!isValidUser) {
+      throw new UnauthorizedException('Invalid username or password');
+    }
+    const isValidPassword = await bcrypt.compare(
+      oldPassword,
+      isValidUser.password,
+    );
+    if (!isValidPassword) {
+      throw new UnauthorizedException('Invalid username or password');
+    }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
     await this.employeeSchema.findOneAndUpdate(
@@ -51,7 +64,12 @@ export class AuthService {
       {
         password: hashedPassword,
       },
+      {
+        new: true,
+      },
     );
-    return true;
+    return {
+      data: hashedPassword
+    };
   }
 }
