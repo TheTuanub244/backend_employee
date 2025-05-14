@@ -33,6 +33,10 @@ export class PropertyController {
   async returnProperty(@Param('id') id: string) {
     return await this.propertyService.returnProperty(id);
   }
+  @Get('acceptMaintaince/:id')
+  async acceptMaintaince(@Param('id')id : string){
+    return await this.propertyService.acceptMaintaince(id)
+  }
   @Get('/getAllPropertyByDepartmentAndStatus')
   async getAllPropertyByDepartmentAndStatus(
     @Query('departmentId') departmentId: string,
