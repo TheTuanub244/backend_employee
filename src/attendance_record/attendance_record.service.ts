@@ -111,9 +111,11 @@ export class AttendanceRecordService {
     }
   }
   async getAllMyAttendanceRecord(employeeId: Types.ObjectId) {
-    return await this.attendanceRecordSchema.find({
-      employeeId,
-    });
+    return await this.attendanceRecordSchema
+      .find({
+        employeeId,
+      })
+      .sort({ checkIn: -1 });
   }
   async getTotalWorkHoursByEmployee(
     employeeId: Types.ObjectId,
